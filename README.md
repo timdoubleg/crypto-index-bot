@@ -1,5 +1,5 @@
 # PWACL
-Title: Building an automated index for your binance account
+Title: Building an automated index for your binance account in Python
 
 Date: 04.11.2020 - 18.12.2020
 

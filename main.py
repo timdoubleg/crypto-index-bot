@@ -12,9 +12,16 @@
 
     # Gets data from account balance as dictionary
     coin_balance = client.get_account()
-    
-    # Loops through the account balance and prints only the allocations > 0
+    print(coin_balance)
+
+    # Initializes empty list to store our allocations
+    allocations = []
+
+    # Loops through the account balance and stores only the allocations > 0
     for element in coin_balance['balances']:
         if float(element.get('free')) > 0.00000000:
-            print(str(element).replace("{","").replace("}","").replace("'",""))
+            alloc = str(element).replace("{","").replace("}","").replace("'","")
+            allocations.append(alloc)
+
+    print(allocations)
 

@@ -3,7 +3,8 @@ from binance.client import Client # Import the Binance Client
 from binance.websockets import BinanceSocketManager # Import the Binance Socket Manager
 import pandas as pd
 
-# turn off warnings
+# The code has been checked for errors. The warning happens when a dataframe is overwritte. 
+# Turn off warnings
 pd.options.mode.chained_assignment = None  # default='warn'
 
 

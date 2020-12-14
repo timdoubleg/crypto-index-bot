@@ -16,68 +16,23 @@ client = Client(api_key=PUBLIC, api_secret=SECRET)
 # Gets data from account balance as dictionary
 coin_balance = client.get_account()
 
-#transform balance from dictionary to dataframe
+# From dictionary to dataframe
 coin_balance = pd.DataFrame.from_dict(coin_balance['balances'])
+
+# Drops all the cryptocurrencies and leaves only the ones where we have money allocated
+coin_balance["free"] = pd.to_numeric(coin_balance["free"], downcast="float")
+coin_balance = coin_balance[coin_balance["free"] > 0]
 print(coin_balance)
 
-# transform values to integers
-coin_balance['free'] = pd.to_numeric(coin_balance['free'])
-coin_balance['locked'] = pd.to_numeric(coin_balance['locked'])
-coin_balance.dtypes
+# Gets market caps
+market_cap = pd.DataFrame.from_dict(cg.get_global())
+market_cap_perc = market_cap["market_cap_percentage"].sort_values(ascending = False).head(10)
+print(market_cap_perc)
 
-# Get market caps from coingecko
-market_cap = pd.DataFrame.from_dict(cg.get_global()) #get the data from the api
-market_cap = market_cap.sort_values(by='market_cap_percentage', ascending=False, na_position='last') #sort by largest to smallest
-market_cap = market_cap.reset_index(drop=False) # reset index
-market_cap = market_cap.head(10) #only get top 10
-columns_marketcap = ['index', 'market_cap_percentage'] #add columns
-market_cap = market_cap.drop(columns=[col for col in market_cap if col not in columns_marketcap]) #drop all columns we don't need
-market_cap = market_cap.rename(columns={'index': 'symbol'}) #change name of column
-market_cap['symbol'] = market_cap['symbol'] + 'usdt' # add USDT to string
-market_cap['symbol'] = market_cap['symbol'].str.upper() # make the dataframe Uppercase to compare
+# Computes the sum of all the percentages
+total_market_cap = market_cap_perc.sum()
+print(total_market_cap)
 
 
-# Get market data prices from coingecko
-tickers = client.get_ticker()
-prices = pd.DataFrame.from_dict(tickers)
-coin_balance.loc[coin_balance['asset']=='USDTusdt']
-#prices does not have a trading pair USDTUSDT
 
 
-# create columns for later and some more data handling
-coin_balance['portfolio weights'] = 'NA'
-coin_balance['USDT'] = 'NA'
-coin_balance['asset'] = coin_balance['asset'] + 'usdt' # add USDT to string
-coin_balance['asset'] = coin_balance['asset'].str.upper() # make the dataframe Uppercase to compare
-
-# merge both dataframes
-coin_balance = coin_balance.rename(columns={'asset': 'symbol'})
-df = pd.merge(prices, coin_balance, how ='inner', on='symbol')
-df['lastPrice'] = pd.to_numeric(df['lastPrice']) #transform to integers
-df.dtypes #check it is transformered to integers
-
-
-# calculate portfolio values
-for i in range(len(df)):
-    df['USDT'][i] =  df['lastPrice'][i] * df['free'][i]
-
-# calculate portfolio weights
-df['USDT'] = pd.to_numeric(df['USDT'])
-portfolio_sum = df['USDT']
-portfolio_sum = portfolio_sum.sum()
-for i in range(len(df)):
-    df['portfolio weights'][i] = df['USDT'][i]/portfolio_sum
-df
-
-# drop all not needed values from the df price 
-final_table_columns = ['symbol', 'lastPrice', 'free', 'portfolio weights', 'USDT']
-df = df.drop(columns=[col for col in df if col not in final_table_columns])
-
-# find USDT value (not needed)
-coin_balance.loc[coin_balance['asset']=='USDTusdt']
-
-#compare market_cap_perc and df
-market_cap
-df
-
-#change index in market_cap to match the name in df

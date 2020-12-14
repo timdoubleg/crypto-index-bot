@@ -79,8 +79,7 @@ portfolio_sum = df['USDT']
 portfolio_sum = portfolio_sum.sum()
 for i in range(len(df)):
     df['portfolio weights'][i] = df['USDT'][i]/portfolio_sum
-df
-df.loc[df['symbol'] == 'USDTUSDT']
+df.loc[df['symbol'] == 'USDTUSDT'] #probably not necessary
 
 
 # drop all not needed values from the df price 
@@ -89,7 +88,10 @@ df = df.drop(columns=[col for col in df if col not in df_table_columns])
 market_cap
 
 #merge both dataframes
-df_merged = pd.merge(df, market_cap, how ='inner', on='symbol')
+df_merged = pd.merge(df, market_cap, how ='left', on='symbol')
+df_merged = df_merged.sort_values(by='market_cap_percentage', ascending=False, na_position='last') #sort by largest to smallest
+df_merged['market_cap_percentage'] = df_merged['market_cap_percentage'].fillna(0)
+
 
 #calculate the differences
 df_merged['difference'] = df_merged['market_cap_percentage'] - df_merged['portfolio weights']
@@ -97,3 +99,21 @@ df_merged['difference'] = df_merged['market_cap_percentage'] - df_merged['portfo
 #compare market_cap_perc and df
 print(market_cap)
 print(df_merged)
+
+
+# ------------------------
+
+# Start placing orders
+
+
+
+
+
+
+#without USDT
+df_merged['symbol'] = df_merged['symbol'].str[:-4]
+
+
+
+
+

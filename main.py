@@ -2,17 +2,20 @@ from pycoingecko import CoinGeckoAPI
 from binance.client import Client # Import the Binance Client
 from binance.websockets import BinanceSocketManager # Import the Binance Socket Manager
 import pandas as pd
-import config
 
-# The code has been checked for errors. The warning happens when a dataframe is overwritte. 
-# Turn off warnings
+# turn off warnings
 pd.options.mode.chained_assignment = None  # default='warn'
 
 
 cg = CoinGeckoAPI()
 
+# Although fine for tutorial purposes, your API Keys should never be placed directly in the script like below. 
+# You should use a config file (cfg or yaml) to store them and reference when needed.
+PUBLIC = 'r7NNoC9Y67xf2mmwSTYM1DwRA03Q3i6YHvKElp9aU6a3LFh0Fhmv0MRPSqBsAt6z'
+SECRET = 'CTfkY0bkUpiLfzEgZjL78X93UhN79Tb26Cqp7W27TSVvhod8vZUR3ACr1Q0B86ju'
+
 # Instantiate a Client 
-client = Client(api_key=config.PUBLIC, api_secret=config.SECRET)
+client = Client(api_key=PUBLIC, api_secret=SECRET)
 
 # Gets data from account balance as dictionary
 coin_balance = client.get_account()
@@ -102,10 +105,54 @@ df_merged = df_merged[(df_merged["free"] != 0) | (df_merged["market_cap_percenta
 print(df_merged)
 
 
-# ------------------------
+# -------------------------------------------------------------
 
 # Start placing orders
+from binance.enums import *
 
+#threshold as we need to account for fees
+threshold = 0.95
+i=0
+pf_value = df_merged['USDT'].sum()
+
+
+# Test order
+order = client.create_test_order(
+            symbol= df_merged['symbol'][i],
+            side=SIDE_SELL,
+            type=ORDER_TYPE_MARKET,
+            quantity = round(df_merged['difference'][i]*threshold*-1*pf_value,2)
+            )
+print(order)
+
+# get all open orders
+print(client.get_all_orders(symbol=df_merged['symbol'][i]))
+
+
+
+
+# For Loop for Rebalancing (Work in Progress)
+
+for i in range(len(df_merged)):
+    #sell order
+    if df_merged['difference'][i] < 0:
+        order = client.create_test_order(
+            symbol= df_merged['symbol'][i],
+            side=SIDE_SELL,
+            type=ORDER_TYPE_MARKET,
+            timeInForce=TIME_IN_FORCE_GTC,
+            quantity = df_merged['difference'][i]*threshold
+            )
+        )
+
+
+order = client.create_order(
+    symbol='BNBBTC',
+    side=SIDE_BUY,
+    type=ORDER_TYPE_LIMIT,
+    timeInForce=TIME_IN_FORCE_GTC,
+    quantity=100,
+    price='0.00001')
 
 
 

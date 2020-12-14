@@ -98,6 +98,7 @@ df_merged['difference'] = df_merged['market_cap_percentage'] - df_merged['portfo
 
 #compare market_cap_perc and df
 print(market_cap)
+df_merged = df_merged[(df_merged["free"] != 0) | (df_merged["market_cap_percentage"] != 0)]
 print(df_merged)
 
 
@@ -112,6 +113,9 @@ print(df_merged)
 
 #without USDT
 df_merged['symbol'] = df_merged['symbol'].str[:-4]
+
+
+
 
 
 

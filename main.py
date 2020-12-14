@@ -91,9 +91,11 @@ df_table_columns = ['symbol', 'lastPrice', 'free', 'portfolio weights', 'USDT']
 df = df.drop(columns=[col for col in df if col not in df_table_columns])
 market_cap
 
-
 #merge both dataframes
 df_merged = pd.merge(df, market_cap, how ='inner', on='symbol')
+
+#calculate the differences
+df_merged['difference'] = df_merged['market_cap_percentage'] - df_merged['portfolio weights']
 
 #compare market_cap_perc and df
 print(market_cap)

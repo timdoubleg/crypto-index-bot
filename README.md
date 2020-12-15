@@ -22,14 +22,13 @@ Technology: Python 3.6
 In order to do so, the code works as follows:
 
 * Firstly, the project retrieves your asset's allocation data from your binance account.
-
 * Secondly, the project retrieves market capitalization data and cryptocurrencies' prices from https://www.coingecko.com 
-* Thirdly, the different targeted weights in order for your binance portfolio to reflect the ten biggest cryptocurrencies and their allocations by market capitalization are computed.
+* Thirdly, the different targeted weights based on the ten biggest cryptocurrencies market capitalization are computed.
 * Fourthly, these targeted weights are compared to your current assets' allocation in your binance portfolio. 
-* Finally, based on this comparison, the buy and sell orders are made so that your portfolio's assets are equally weighted as the top ten cryptocurrencies by market capitalization.
+* Finally, based on this comparison, the buy and sell orders are made so that your binance portfolio's assets are equally weighted as the top ten cryptocurrencies by market capitalization.
 
 ## Assumption: 
-The code assumes that you already have some crypto on your binance account.
+The code assumes that you already have some cryptocurrencies on your binance account.
 The code rebalances 90% of your assets in order to keep 10% for any transaction costs.
 
 # Installation

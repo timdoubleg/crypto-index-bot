@@ -42,7 +42,7 @@ This project requires the following packages: pandas, python-binance, pycoingeck
     $ pip3 install -r requirements.txt
     ```
 2) Put your own "API PUBLIC" and "API SECRET" from your Binance Account in config.py and run the config.py code. 
-(Alternatively, you can use the keys already used in the file which are linked the creators of the code's binance account)
+(Alternatively, you can use the keys already written in the file which are linked the creators of the code's binance account)
 
 # Sources
 * Binance API documentation: https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md 

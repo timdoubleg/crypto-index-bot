@@ -127,24 +127,10 @@ threshold = 0.95
 i=0
 pf_value = df_merged['USDT'].sum()
 
-
-# Test order
-order = client.create_test_order(
-            symbol= df_merged['symbol'][i],
-            side=SIDE_SELL,
-            type=ORDER_TYPE_MARKET,
-            quantity = round(df_merged['difference'][i]*threshold*-1*pf_value,2)
-            )
-print(order)
-# creating a test order returns an empty response by design if the order would be valid (see the official docs). 
-# You would get an error in the response if there were a problem with it, so the fact that your response is empty means success.
-
-
 # get all open orders
 print(client.get_all_orders(symbol=df_merged['symbol'][i]))
 #if this is empty then we have no open orders
 
-# For Loop for Rebalancing (Work in Progress)
 
 # If we have USDT in our portfolio, we cannot sell directly USDT i, but we buy other cryptos with it
 for i in range(len(df_merged)):
@@ -153,10 +139,46 @@ for i in range(len(df_merged)):
     else:
         print(df_merged['symbol'][i] + ': will execute this order')
 
+# Single Test Order
+i=0
+order = client.create_test_order(
+    symbol= 'ethbtc',
+    side=SIDE_Buy,
+    type=ORDER_TYPE_LIMIT,
+    timeInForce=TIME_IN_FORCE_GTC,
+    quantity=round(pf_value/df_merged['price'][i]*threshold*df_merged['difference'][i]*-1,6),
+    price='19000')
+    
+    print(df_merged['symbol'][i] + ': sell order')
+    
+    print(order)
+    # creating a test order returns an empty response by design if the order would be valid (see the official docs). 
+    # You would get an error in the response if there were a problem with it, so the fact that your response is empty means success.
+
+# Example for i=1 , eth
+i=1
+round(pf_value*threshold*df_merged['difference'][i],6) #how much USDT we need to sell
+round(pf_value/df_merged['price'][i]*threshold*df_merged['difference'][i],6) #how much ETH we need to sell
+
+
+# ERRORS: ---------------
+# 1. If you get the error "BinanceAPIException: APIError(code=-1013): Filter failure: minQty"
+# This error appears because you are trying to create an order with a quantity lower than the minimun required.
+    info = client.get_symbol_info('ethbtc')    
+    # Get minimum order amount
+    print(info['filters'][2]['minQty'])
+
+# 2. Error "BinanceAPIException: APIError(code=-1013): Filter failure: MIN_NOTIONAL"
+# This error appears when your order amount is smaller than the cost
+
+    # Get minimum notional amount
+    print(info['filters'][3]['minNotional'])
 
 
 
 
+#-----------------------------------------
+# For Loop for Rebalancing (Work in Progress)
 
 for i in range(len(df_merged)):
     #sell order

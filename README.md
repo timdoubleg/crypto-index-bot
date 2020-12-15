@@ -23,7 +23,7 @@ In order to do so, the code works as follows:
 
 * Firstly, the project retrieves your asset's allocation data from your binance account.
 * Secondly, the project retrieves market capitalization data and cryptocurrencies' prices from https://www.coingecko.com 
-![Market cap Table](/file:///Users/henridemontpellier1/Desktop/Screenshot%202020-12-15%20at%2021.41.24.png)
+![Marketcaptable](/marketcaps.png)
 * Thirdly, the different targeted weights based on the ten biggest cryptocurrencies market capitalization are computed.
 * Fourthly, these targeted weights are compared to your current assets' allocation in your binance portfolio. 
 * Finally, based on this comparison, the buy and sell orders are made so that your binance portfolio's assets are equally weighted as the top ten cryptocurrencies by market capitalization.

@@ -32,10 +32,9 @@ The code assumes that you already have some cryptocurrencies on your binance acc
 The code rebalances 90% of your assets in order to keep 10% for any transaction costs.
 
 # Installation
+This project requires the following packages: pandas, python-binance, pycoingecko.
 
-This project requires the following packages: pandas, python-binance, pycoingecko 
-
-1) In order run this project, install the required packages using the requirements.txt file: 
+1) In order to run this project, install the required packages using the requirements.txt file: 
     ```
     $ pip freeze > requirements.txt
     $ pip3 install -r requirements.txt

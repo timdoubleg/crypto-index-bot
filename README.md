@@ -10,6 +10,7 @@ Authors: Tim Graf, Marvin Scherer, Henri de Montpellier
 ## Table of contents
 * [Description](#Description)
 * [Installation](#Installation)
+* [Sources](Sources)
 
 
 # Description:
@@ -42,5 +43,9 @@ This project requires the following packages: pandas, python-binance, pycoingeck
     ```
 2) Put your own "API PUBLIC" and "API SECRET" from your Binance Account in config.py and run the config.py code. 
 (Alternatively, you can use the keys already used in the file which are linked the creators of the code's binance account)
+
+# Sources
+* Binance API documentation: https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md 
+* Coingecko API documentation: https://www.coingecko.com/api/documentations/v3 
 
 

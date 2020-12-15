@@ -1,20 +1,21 @@
 from pycoingecko import CoinGeckoAPI 
-# Import the Binance Client
-from binance.client import Client 
-# Import the Binance Socket Manager
-from binance.websockets import BinanceSocketManager 
+from binance.client import Client # Import the Binance Client
+from binance.websockets import BinanceSocketManager # Import the Binance Socket Manager
 import pandas as pd
-import config.py
 
 # turn off warnings
-## default='warn'
-pd.options.mode.chained_assignment = None  
+pd.options.mode.chained_assignment = None  # default='warn'
+
 
 cg = CoinGeckoAPI()
 
+# Although fine for tutorial purposes, your API Keys should never be placed directly in the script like below. 
+# You should use a config file (cfg or yaml) to store them and reference when needed.
+PUBLIC = 'r7NNoC9Y67xf2mmwSTYM1DwRA03Q3i6YHvKElp9aU6a3LFh0Fhmv0MRPSqBsAt6z'
+SECRET = 'CTfkY0bkUpiLfzEgZjL78X93UhN79Tb26Cqp7W27TSVvhod8vZUR3ACr1Q0B86ju'
 
 # Instantiate a Client 
-client = Client(api_key=config.api_key, api_secret=config.api_secret)
+client = Client(api_key=PUBLIC, api_secret=SECRET)
 
 # Gets data from account balance as dictionary
 coin_balance = client.get_account()
@@ -30,24 +31,15 @@ coin_balance.dtypes
 
 
 # Get market caps from coingecko
-# get the data from the api
-market_cap = pd.DataFrame.from_dict(cg.get_global())
-#sort by largest to smallest
-market_cap = market_cap.sort_values(by='market_cap_percentage', ascending=False, na_position='last')
-# reset index
-market_cap = market_cap.reset_index(drop=False)
-#only get top 10
-market_cap = market_cap.head(10)
-#add columns
-columns_marketcap = ['index', 'market_cap_percentage']
-#drop all columns we don't need
-market_cap = market_cap.drop(columns=[col for col in market_cap if col not in columns_marketcap])
-#change name of column
-market_cap = market_cap.rename(columns={'index': 'symbol'}) 
- # add USDT to string
-market_cap['symbol'] = market_cap['symbol'] + 'usdt'
-# make the dataframe Uppercase to compare
-market_cap['symbol'] = market_cap['symbol'].str.upper() 
+market_cap = pd.DataFrame.from_dict(cg.get_global()) #get the data from the api
+market_cap = market_cap.sort_values(by='market_cap_percentage', ascending=False, na_position='last') #sort by largest to smallest
+market_cap = market_cap.reset_index(drop=False) # reset index
+market_cap = market_cap.head(10) #only get top 10
+columns_marketcap = ['index', 'market_cap_percentage'] #add columns
+market_cap = market_cap.drop(columns=[col for col in market_cap if col not in columns_marketcap]) #drop all columns we don't need
+market_cap = market_cap.rename(columns={'index': 'symbol'}) #change name of column
+market_cap['symbol'] = market_cap['symbol'] + 'usdt' # add USDT to string
+market_cap['symbol'] = market_cap['symbol'].str.upper() # make the dataframe Uppercase to compare
 sum_caps = market_cap['market_cap_percentage'].sum() 
 market_cap['market_cap_percentage'] = (market_cap['market_cap_percentage']/sum_caps)
 
@@ -67,40 +59,30 @@ print(prices)
 """
 
 # BINANCE: Get prices from Binance
-#gets all prices
-prices_binance = client.get_all_tickers() 
-#converts dictionary to dataframe
-prices_binance = pd.DataFrame.from_dict(prices_binance) 
-#check for BTCUSDT, we find it
-prices_binance.loc[prices_binance['symbol']=='BTCUSDT'] 
+prices_binance = client.get_all_tickers() #gets all prices
+prices_binance = pd.DataFrame.from_dict(prices_binance) #converts dictionary to dataframe
+prices_binance.loc[prices_binance['symbol']=='BTCUSDT'] #check for BTCUSDT, we find it
 
 # As USDTUSDT does not exist we need to append it
-#check for USDT
-prices_binance.loc[prices_binance['symbol']=='USDTUSDT'] 
+prices_binance.loc[prices_binance['symbol']=='USDTUSDT'] #check for USDT
 prices_binance = prices_binance.append({'symbol': 'USDTUSDT', "price": 1}, ignore_index=True)
-#check for USDT again, now we find it
-prices_binance.loc[prices_binance['symbol']=='USDTUSDT'] 
+prices_binance.loc[prices_binance['symbol']=='USDTUSDT'] #check for USDT again, now we find it
 print(prices_binance)
 
 
 # create columns for later and some more data handling
 coin_balance['portfolio weights'] = 'NA'
 coin_balance['USDT'] = 'NA'
-#change name of column
-coin_balance = coin_balance.rename(columns={'asset': 'symbol'}) 
-# add USDT to string
-coin_balance['symbol'] = coin_balance['symbol'] + 'usdt' 
-# make the dataframe Uppercase to compare
-coin_balance['symbol'] = coin_balance['symbol'].str.upper() 
+coin_balance = coin_balance.rename(columns={'asset': 'symbol'}) #change name of column
+coin_balance['symbol'] = coin_balance['symbol'] + 'usdt' # add USDT to string
+coin_balance['symbol'] = coin_balance['symbol'].str.upper() # make the dataframe Uppercase to compare
 
 
 # merge both dataframes
 coin_balance = coin_balance.rename(columns={'asset': 'symbol'})
 df = pd.merge(prices_binance, coin_balance, how ='inner', on='symbol')
-#transform to integers
-df['price'] = pd.to_numeric(df['price']) 
-#check it is transformered to integers
-df.dtypes 
+df['price'] = pd.to_numeric(df['price']) #transform to integers
+df.dtypes #check it is transformered to integers
 
 
 # calculate portfolio values
@@ -113,8 +95,7 @@ portfolio_sum = df['USDT']
 portfolio_sum = portfolio_sum.sum()
 for i in range(len(df)):
     df['portfolio weights'][i] = df['USDT'][i]/portfolio_sum
-#probably not necessary
-df.loc[df['symbol'] == 'USDTUSDT'] 
+df.loc[df['symbol'] == 'USDTUSDT'] #probably not necessary
 
 
 # drop all not needed values from the df price 
@@ -133,25 +114,17 @@ df_merged['difference'] = df_merged['market_cap_percentage'] - df_merged['portfo
 print(market_cap)
 df_merged = df_merged[(df_merged["free"] != 0) | (df_merged["market_cap_percentage"] != 0)]
 print(df_merged)
-# reset index
-df_merged = df_merged.reset_index(drop=True) 
+df_merged = df_merged.reset_index(drop=True) # reset index
 
-#change trading pairs from USDT to BTC with the exception of BTC, there we keep USDT
+# replace USDT by BTC
 df_merged['symbol'] = df_merged['symbol'].str[:-4]
-for i in range(len(df_merged)):
-    if df_merged['symbol'][i] == 'USDT':
-        df_merged['symbol'][i] = df_merged['symbol'][i]
-    if df_merged['symbol'][i] == 'BTC':
-        df_merged['symbol'][i] = df_merged['symbol'][i] + 'USDT'
-    else:
-        df_merged['symbol'][i] = df_merged['symbol'][i] + 'BTC'
-
-print(df_merged)
+df_merged['symbol'] = df_merged['symbol'] + 'BTC'
 
 
-# -------------------------------------------------------------
 
-# Start placing orders
+
+# Testing orders -------------------------------------------------------------
+
 from binance.enums import *
 
 #threshold as we need to account for fees
@@ -172,6 +145,7 @@ for i in range(len(df_merged)):
         print(df_merged['symbol'][i] + ': will execute this order')
 """
 
+# Test Order
 order = client.create_test_order(
     symbol='BNBBTC',
     side=SIDE_BUY,
@@ -196,19 +170,6 @@ order = client.create_test_order(
     quantity=round(pf_value/df_merged['price'][i]*threshold*df_merged['difference'][i],3) 
 )
 
-
-# Single Test Order for ethbtc
-i=2
-symbol = 'XRPBTC'
-order = client.create_test_order(
-    symbol=symbol,
-    side=SIDE_BUY,
-    type=ORDER_TYPE_MARKET,
-    quantity=round(pf_value/df_merged['price'][i]*threshold*df_merged['difference'][i],3) 
-)
-
-
-
 # Example for i=1 , eth
 i=1
 round(pf_value*threshold*df_merged['difference'][i],6) #how much USDT we need to sell
@@ -217,24 +178,53 @@ round(pf_value/df_merged['price'][i]*threshold*df_merged['difference'][i],6) #ho
 
 # Extracting the minQty,stepSize, and minNotional to avoid errors: ---------------
 
-info = client.get_symbol_info('ethbtc') 
-#checks for the keys in the dictionary
-for key in info:
-    print(key, '->', info[key])
-# transform filters to a dataframe
-info_df = pd.DataFrame.from_dict(info['filters'])
-
-index = seq(0,9)
-columns = ['minQty', 'minNotional', 'StepSize']
+# create an empty dataframe
+index = range(10)
+columns = ['symbol', 'minQty', 'minNotional', 'stepSize']
 filters = pd.DataFrame(index=index, columns=columns)
 
-filters = pd.DataFrame(data=1)
-#extract needed files 
+# transform filters to a dataframe (not needed necessarily)
+info_df = pd.DataFrame.from_dict(info['filters'])
+
+
+i=2
+if df_merged['symbol'][i] == 'USDTBTC' or df_merged['symbol'][i] == 'BTCBTC':
+    # get filter values 
+    print('BTCBTC or USDTBTC')
+else:
+    print('not BTCBTC or USDTBTC')
+
+
+
+
+# run a loop to get all values for every currency
+for i in range(len(df_merged)):
+    
+    symbol = df_merged['symbol'][i]
+
+    if df_merged['symbol'][i] == 'USDTBTC' or df_merged['symbol'][i] == 'BTCBTC':
+        print('BTCBTC or USDTBTC')
+    else:
+        # get filter values 
+        info = client.get_symbol_info(symbol) 
+
+        # extract needed files 
+        filters['symbol'][i] = symbol
+        filters['minQty'][i] = info['filters'][2]['minQty']
+        filters['minNotional'][i] = info['filters'][3]['minNotional']
+        filters['stepSize'][i] = info['filters'][2]['stepSize']
+
+
+
 
 
 # ERRORS: ---------------
 
+#checks for the keys in the dictionary
 info = client.get_symbol_info('ethbtc') 
+for key in info:
+    print(key, '->', info[key])
+
 # 1. If you get the error "BinanceAPIException: APIError(code=-1013): Filter failure: minQty"
 # This error appears because you are trying to create an order with a quantity lower than the minimun required.
 # Get minimum order amount

@@ -3,13 +3,44 @@ Title: Building an automated index for your binance account in Python
 
 Date: 04.11.2020 - 18.12.2020
 
+Technology: Python 3.6
+
 Authors: Tim Graf, Marvin Scherer, Henri de Montpellier
 
-Description:
-This is the official code for a project in the course "Programming with Advanced Computer Languages" at the University of St. Gallen. The aim is to build a trading bot which takes your binance account and rebalances it for a given frequency, all automatically. 
+## Table of contents
+* [Description](#Description)
+* [Installation](#Installation)
 
-1) In order to install the required packages, run in your terminal run: 
-    pip freeze > requirements.txt
-    pip3 install -r requirements.txt
-2) Put your own "API PUBLIC" and "API SECRET" from your Binance Account in config.py
+
+# Description:
+
+This is the official code for a project in the course "Programming with Advanced Computer Languages" at the University of St. Gallen. The codes aim at rebalancing your assets on your binance account in oreder to reflex our index. The index is based on the ten biggest cryptoccurencies by market capitalization. Therefore, running the code will rebalance your binance portfolio in order for it to be weighted according to the top ten cryptocurrencies' market capitalization.
+
+Technology: Python 3.6
+
+In order to do so, the code works as follows:
+
+* Firstly, the project retrieves your asset's allocation data from your binance account.
+
+* Secondly, the project retrieves market capitalization data and cryptocurrencies' prices from https://www.coingecko.com 
+* Thirdly, the different targeted weights in order for your binance portfolio to reflect the ten biggest cryptocurrencies and their allocations by market capitalization are computed.
+* Fourthly, these targeted weights are compared to your current assets' allocation in your binance portfolio. 
+* Finally, based on this comparison, the buy and sell orders are made so that your portfolio's assets are equally weighted as the top ten cryptocurrencies by market capitalization.
+
+## Assumption: 
+The code assumes that you already have some crypto on your binance account.
+The code rebalances 90% of your assets in order to keep 10% for any transaction costs.
+
+# Installation
+
+This project requires the following packages: pandas, python-binance, pycoingecko 
+
+1) In order run this project, install the required packages using the requirements.txt file: 
+    ```
+    $ pip freeze > requirements.txt
+    $ pip3 install -r requirements.txt
+    ```
+2) Put your own "API PUBLIC" and "API SECRET" from your Binance Account in config.py and run the config.py code. 
+(Alternatively, you can use the keys already used in the file which are linked the creators of the code's binance account)
+
 

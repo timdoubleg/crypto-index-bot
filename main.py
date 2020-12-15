@@ -1,12 +1,14 @@
 from pycoingecko import CoinGeckoAPI 
-from binance.client import Client # Import the Binance Client
-from binance.websockets import BinanceSocketManager # Import the Binance Socket Manager
+# Import the Binance Client
+from binance.client import Client 
+# Import the Binance Socket Manager
+from binance.websockets import BinanceSocketManager 
 import pandas as pd
 import config.py
 
 # turn off warnings
-pd.options.mode.chained_assignment = None  # default='warn'
-
+## default='warn'
+pd.options.mode.chained_assignment = None  
 
 cg = CoinGeckoAPI()
 

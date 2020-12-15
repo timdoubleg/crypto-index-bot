@@ -116,6 +116,18 @@ df_merged = df_merged[(df_merged["free"] != 0) | (df_merged["market_cap_percenta
 print(df_merged)
 df_merged = df_merged.reset_index(drop=True) # reset index
 
+#change trading pairs from USDT to BTC with the exception of BTC, there we keep USDT
+df_merged['symbol'] = df_merged['symbol'].str[:-4]
+for i in range(len(df_merged)):
+    if df_merged['symbol'][i] == 'USDT':
+        df_merged['symbol'][i] = df_merged['symbol'][i]
+    if df_merged['symbol'][i] == 'BTC':
+        df_merged['symbol'][i] = df_merged['symbol'][i] + 'USDT'
+    else:
+        df_merged['symbol'][i] = df_merged['symbol'][i] + 'BTC'
+
+print(df_merged)
+
 
 # -------------------------------------------------------------
 
@@ -131,29 +143,51 @@ pf_value = df_merged['USDT'].sum()
 print(client.get_all_orders(symbol=df_merged['symbol'][i]))
 #if this is empty then we have no open orders
 
-
+"""
 # If we have USDT in our portfolio, we cannot sell directly USDT i, but we buy other cryptos with it
 for i in range(len(df_merged)):
     if df_merged['symbol'][i] == 'USDTUSDT':
         print(df_merged['symbol'][i] + ': will not execute this order')
     else:
         print(df_merged['symbol'][i] + ': will execute this order')
+"""
 
-# Single Test Order
-i=0
 order = client.create_test_order(
-    symbol= 'ethbtc',
-    side=SIDE_Buy,
-    type=ORDER_TYPE_LIMIT,
-    timeInForce=TIME_IN_FORCE_GTC,
-    quantity=round(pf_value/df_merged['price'][i]*threshold*df_merged['difference'][i]*-1,6),
-    price='19000')
-    
-    print(df_merged['symbol'][i] + ': sell order')
-    
-    print(order)
-    # creating a test order returns an empty response by design if the order would be valid (see the official docs). 
-    # You would get an error in the response if there were a problem with it, so the fact that your response is empty means success.
+    symbol='BNBBTC',
+    side=SIDE_BUY,
+    type=ORDER_TYPE_MARKET,
+    quantity=100,
+    price='0.001')
+
+order = client.order_market_buy(
+    symbol='BNBBTC',
+    quantity=100)
+
+
+# Single Test Order for ETHBTC
+# creating a test order returns an empty response by design if the order would be valid (see the official docs). 
+# You would get an error in the response if there were a problem with it, so the fact that your response is empty means success.
+i=1
+symbol = 'ETHBTC'
+order = client.create_test_order(
+    symbol=symbol,
+    side=SIDE_BUY,
+    type=ORDER_TYPE_MARKET,
+    quantity=round(pf_value/df_merged['price'][i]*threshold*df_merged['difference'][i],3) 
+)
+
+
+# Single Test Order for ethbtc
+i=2
+symbol = 'XRPBTC'
+order = client.create_test_order(
+    symbol=symbol,
+    side=SIDE_BUY,
+    type=ORDER_TYPE_MARKET,
+    quantity=round(pf_value/df_merged['price'][i]*threshold*df_merged['difference'][i],3) 
+)
+
+
 
 # Example for i=1 , eth
 i=1
@@ -161,18 +195,39 @@ round(pf_value*threshold*df_merged['difference'][i],6) #how much USDT we need to
 round(pf_value/df_merged['price'][i]*threshold*df_merged['difference'][i],6) #how much ETH we need to sell
 
 
+# Extracting the minQty,stepSize, and minNotional to avoid errors: ---------------
+
+info = client.get_symbol_info('ethbtc') 
+#checks for the keys in the dictionary
+for key in info:
+    print(key, '->', info[key])
+# transform filters to a dataframe
+info_df = pd.DataFrame.from_dict(info['filters'])
+
+index = seq(0,9)
+columns = ['minQty', 'minNotional', 'StepSize']
+filters = pd.DataFrame(index=index, columns=columns)
+
+filters = pd.DataFrame(data=1)
+#extract needed files 
+
+
 # ERRORS: ---------------
+
+info = client.get_symbol_info('ethbtc') 
 # 1. If you get the error "BinanceAPIException: APIError(code=-1013): Filter failure: minQty"
 # This error appears because you are trying to create an order with a quantity lower than the minimun required.
-    info = client.get_symbol_info('ethbtc')    
-    # Get minimum order amount
-    print(info['filters'][2]['minQty'])
+# Get minimum order amount
+print('Minimum Order Amount: ' + info['filters'][2]['minQty'])
 
 # 2. Error "BinanceAPIException: APIError(code=-1013): Filter failure: MIN_NOTIONAL"
 # This error appears when your order amount is smaller than the cost
+# Get minimum notional amount
+print('Minimum Notional: ' + info['filters'][3]['minNotional'])
 
-    # Get minimum notional amount
-    print(info['filters'][3]['minNotional'])
+# 3. Error "LOT SIZE": This appears when either min qt, max qt, stepSize, or min notional is violated
+# Get stepSiez
+print('stepSize: ' + info['filters'][2]['stepSize'])
 
 
 

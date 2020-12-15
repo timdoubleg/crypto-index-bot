@@ -30,7 +30,7 @@ coin_balance.dtypes
 
 
 # Get market caps from coingecko
-#get the data from the api
+# get the data from the api
 market_cap = pd.DataFrame.from_dict(cg.get_global())
 #sort by largest to smallest
 market_cap = market_cap.sort_values(by='market_cap_percentage', ascending=False, na_position='last')

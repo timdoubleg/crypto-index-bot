@@ -10,7 +10,7 @@ Authors: Tim Graf, Marvin Scherer, Henri de Montpellier
 ## Table of contents
 * [Description](#Description)
 * [Installation](#Installation)
-* [Sources](Sources)
+* [Sources](#Sources)
 
 
 # Description:

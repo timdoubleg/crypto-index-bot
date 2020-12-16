@@ -3,7 +3,7 @@ from binance.client import Client # Import the Binance Client
 from binance.websockets import BinanceSocketManager # Import the Binance Socket Manager
 import pandas as pd
 
-# turn off warnings
+# Turn off warnings
 pd.options.mode.chained_assignment = None  # default='warn'
 
 
@@ -20,11 +20,11 @@ client = Client(api_key=PUBLIC, api_secret=SECRET)
 # Gets data from account balance as dictionary
 coin_balance = client.get_account()
 
-#transform balance from dictionary to dataframe
+# Transform balance from dictionary to dataframe
 coin_balance = pd.DataFrame.from_dict(coin_balance['balances'])
-print(coin_balance)
+print("User's Balace: \n", coin_balance)
 
-# transform values to integers
+# Transform values to integers
 coin_balance['free'] = pd.to_numeric(coin_balance['free'])
 coin_balance['locked'] = pd.to_numeric(coin_balance['locked'])
 coin_balance.dtypes
@@ -59,64 +59,69 @@ print(prices)
 """
 
 # BINANCE: Get prices from Binance
-prices_binance = client.get_all_tickers() #gets all prices
-prices_binance = pd.DataFrame.from_dict(prices_binance) #converts dictionary to dataframe
-prices_binance.loc[prices_binance['symbol']=='BTCUSDT'] #check for BTCUSDT, we find it
+prices_binance = client.get_all_tickers() 
+prices_binance = pd.DataFrame.from_dict(prices_binance) # Converts dictionary to dataframe
+prices_binance.loc[prices_binance['symbol']=='BTCUSDT'] # Check for BTCUSDT, we find it
 
 # As USDTUSDT does not exist we need to append it
-prices_binance.loc[prices_binance['symbol']=='USDTUSDT'] #check for USDT
+prices_binance.loc[prices_binance['symbol']=='USDTUSDT'] # Check for USDT
 prices_binance = prices_binance.append({'symbol': 'USDTUSDT', "price": 1}, ignore_index=True)
-prices_binance.loc[prices_binance['symbol']=='USDTUSDT'] #check for USDT again, now we find it
-print(prices_binance)
+prices_binance.loc[prices_binance['symbol']=='USDTUSDT'] # Check for USDT again, now we find it
+print("List of Prices: \n", prices_binance)
 
 
-# create columns for later and some more data handling
+# Create columns for later and some more data handling
 coin_balance['portfolio weights'] = 'NA'
 coin_balance['USDT'] = 'NA'
-coin_balance = coin_balance.rename(columns={'asset': 'symbol'}) #change name of column
-coin_balance['symbol'] = coin_balance['symbol'] + 'usdt' # add USDT to string
-coin_balance['symbol'] = coin_balance['symbol'].str.upper() # make the dataframe Uppercase to compare
+coin_balance = coin_balance.rename(columns={'asset': 'symbol'}) # Change name of column
+coin_balance['symbol'] = coin_balance['symbol'] + 'usdt' # Add USDT to string
+coin_balance['symbol'] = coin_balance['symbol'].str.upper() # Make the dataframe Uppercase to compare
 
 
-# merge both dataframes
+# Merge both dataframes
 coin_balance = coin_balance.rename(columns={'asset': 'symbol'})
 df = pd.merge(prices_binance, coin_balance, how ='inner', on='symbol')
-df['price'] = pd.to_numeric(df['price']) #transform to integers
-df.dtypes #check it is transformered to integers
+# Transform to integers
+df['price'] = pd.to_numeric(df['price']) 
+# Check it is transformered to integers
+# print(df.dtypes) 
 
 
-# calculate portfolio values
+# Calculate portfolio values
 for i in range(len(df)):
     df['USDT'][i] =  df['price'][i] * df['free'][i]
 
-# calculate portfolio weights
+# Calculate portfolio weights
 df['USDT'] = pd.to_numeric(df['USDT'])
 portfolio_sum = df['USDT']
 portfolio_sum = portfolio_sum.sum()
 for i in range(len(df)):
     df['portfolio weights'][i] = df['USDT'][i]/portfolio_sum
-df.loc[df['symbol'] == 'USDTUSDT'] #probably not necessary
+# Probably not necessary
+df.loc[df['symbol'] == 'USDTUSDT'] 
 
 
-# drop all not needed values from the df price 
+# Drop all not needed values from the df price 
 df_table_columns = ['symbol', 'price', 'free', 'portfolio weights', 'USDT']
 df = df.drop(columns=[col for col in df if col not in df_table_columns])
 
-#merge both dataframes
+# Merge both dataframes
 df_merged = pd.merge(df, market_cap, how ='left', on='symbol')
-df_merged = df_merged.sort_values(by='market_cap_percentage', ascending=False, na_position='last') #sort by largest to smallest
+# Sort by largest to smallest
+df_merged = df_merged.sort_values(by='market_cap_percentage', ascending=False, na_position='last') 
 df_merged['market_cap_percentage'] = df_merged['market_cap_percentage'].fillna(0)
 
-#calculate the differences
+# Calculate the differences
 df_merged['difference'] = df_merged['market_cap_percentage'] - df_merged['portfolio weights']
 
-#compare market_cap_perc and df
-print(market_cap)
+# Compare market_cap_perc and df
+print("List of Market Caps: \n", market_cap)
 df_merged = df_merged[(df_merged["free"] != 0) | (df_merged["market_cap_percentage"] != 0)]
-print(df_merged)
-df_merged = df_merged.reset_index(drop=True) # reset index
+print("\nRebalancing: \n ", df_merged)
+# Reset index
+df_merged = df_merged.reset_index(drop=True) 
 
-# replace USDT by BTC
+# Replace USDT by BTC
 df_merged['symbol'] = df_merged['symbol'].str[:-4]
 df_merged['symbol'] = df_merged['symbol'] + 'BTC'
 
@@ -127,14 +132,14 @@ df_merged['symbol'] = df_merged['symbol'] + 'BTC'
 
 from binance.enums import *
 
-#threshold as we need to account for fees
+# Threshold as we need to account for fees
 threshold = 0.95
 i=0
 pf_value = df_merged['USDT'].sum()
 
-# get all open orders
+# Get all open orders
 print(client.get_all_orders(symbol=df_merged['symbol'][i]))
-#if this is empty then we have no open orders
+# If this is empty then we have no open orders
 
 """
 # If we have USDT in our portfolio, we cannot sell directly USDT i, but we buy other cryptos with it
@@ -178,18 +183,18 @@ round(pf_value/df_merged['price'][i]*threshold*df_merged['difference'][i],6) #ho
 
 # Extracting the minQty,stepSize, and minNotional to avoid errors: ---------------
 
-# create an empty dataframe
+# Create an empty dataframe
 index = range(10)
 columns = ['symbol', 'minQty', 'minNotional', 'stepSize']
 filters = pd.DataFrame(index=index, columns=columns)
 
-# transform filters to a dataframe (not needed necessarily)
+# Transform filters to a dataframe (not needed necessarily)
 info_df = pd.DataFrame.from_dict(info['filters'])
 
 
 i=2
 if df_merged['symbol'][i] == 'USDTBTC' or df_merged['symbol'][i] == 'BTCBTC':
-    # get filter values 
+    # Get filter values 
     print('BTCBTC or USDTBTC')
 else:
     print('not BTCBTC or USDTBTC')
@@ -197,7 +202,7 @@ else:
 
 
 
-# run a loop to get all values for every currency
+# Run a loop to get all values for every currency
 for i in range(len(df_merged)):
     
     symbol = df_merged['symbol'][i]
@@ -213,8 +218,6 @@ for i in range(len(df_merged)):
         filters['minQty'][i] = info['filters'][2]['minQty']
         filters['minNotional'][i] = info['filters'][3]['minNotional']
         filters['stepSize'][i] = info['filters'][2]['stepSize']
-
-
 
 
 
@@ -241,12 +244,12 @@ print('stepSize: ' + info['filters'][2]['stepSize'])
 
 
 
-
+"""
 #-----------------------------------------
 # For Loop for Rebalancing (Work in Progress)
 
 for i in range(len(df_merged)):
-    #sell order
+    # Sell order
     if df_merged['difference'][i] < 0:
         order = client.create_test_order(
             symbol= df_merged['symbol'][i],
@@ -256,7 +259,7 @@ for i in range(len(df_merged)):
             )
         print(df_merged['symbol'][i] + ': sell order')
         print(order)
-    #buy order
+    # Buy order
     if df_merged['difference'][i] > 0:
         order = client.create_test_order(
             symbol= df_merged['symbol'][i],
@@ -268,8 +271,6 @@ for i in range(len(df_merged)):
         print(order)
 
 
-
-
 order = client.create_order(
     symbol='BNBBTC',
     side=SIDE_BUY,
@@ -279,10 +280,6 @@ order = client.create_order(
     price='0.00001')
 
 
-#without USDT
+# Without USDT
 df_merged['symbol'] = df_merged['symbol'].str[:-4]
 """
-
-
-
-

@@ -15,7 +15,7 @@ Authors: Tim Graf, Marvin Scherer, Henri de Montpellier
 
 # Description:
 
-This is the official code for a project in the course "Programming with Advanced Computer Languages" at the University of St. Gallen. The codes aim at rebalancing your assets on your binance account in oreder to reflex our index. The index is based on the ten biggest cryptoccurencies by market capitalization. Therefore, running the code will rebalance your binance portfolio in order for it to be weighted according to the top ten cryptocurrencies' market capitalization.
+This is the official code for a project in the course "Programming with Advanced Computer Languages" at the University of St. Gallen. The codes aim at rebalancing your assets on your binance account in order to reflect our index. The index is based on the ten biggest cryptoccurencies by market capitalization. Therefore, running the code will rebalance your binance portfolio so that it mimics the corresponding weights of the top ten cryptocurrencies' market capitalization.
 
 Technology: Python 3.6
 
@@ -23,7 +23,7 @@ In order to do so, the code works as follows:
 
 * Firstly, the project retrieves your asset's allocation data from your binance account.
 
-* Secondly, the project retrieves market capitalization data and cryptocurrencies' prices from https://www.coingecko.com. As follows:
+* Secondly, the project retrieves the cryptocurrencies' prices from binance and the market capitalization data from https://www.coingecko.com. As follows:
 
 ![Marketcaptable](/marketcaps.png)
 

@@ -121,6 +121,20 @@ print("\nRebalancing: \n ", df_merged)
 # Reset index
 df_merged = df_merged.reset_index(drop=True) 
 
+# Print the rebalancing process
+total_usdt = df_merged["USDT"].sum()
+print("\n Total USD:",total_usdt, "\n")
+
+n = 0
+for element in range(len(df_merged)):
+    n = n + 1
+    if df_merged["difference"][element] > 0:
+        coin_value = df_merged["difference"][element] * total_usdt
+        print(n," Buy " , round(coin_value, 3), "USD worth of" ,df_merged["symbol"][element])
+    else:
+        coin_value = df_merged["difference"][element] * total_usdt
+        print(n," Sell " , round(abs(coin_value), 3), "USD worth of" ,df_merged["symbol"][element])
+
 # Replace USDT by BTC
 df_merged['symbol'] = df_merged['symbol'].str[:-4]
 df_merged['symbol'] = df_merged['symbol'] + 'BTC'

@@ -141,7 +141,6 @@ df_merged['symbol'] = df_merged['symbol'] + 'BTC'
 
 
 
-
 # Testing orders -------------------------------------------------------------
 
 from binance.enums import *
@@ -151,11 +150,12 @@ threshold = 0.95
 i=0
 pf_value = df_merged['USDT'].sum()
 
+"""
 # Get all open orders
 print(client.get_all_orders(symbol=df_merged['symbol'][i]))
 # If this is empty then we have no open orders
 
-"""
+
 # If we have USDT in our portfolio, we cannot sell directly USDT i, but we buy other cryptos with it
 for i in range(len(df_merged)):
     if df_merged['symbol'][i] == 'USDTUSDT':
@@ -163,36 +163,6 @@ for i in range(len(df_merged)):
     else:
         print(df_merged['symbol'][i] + ': will execute this order')
 """
-
-# Test Order
-order = client.create_test_order(
-    symbol='BNBBTC',
-    side=SIDE_BUY,
-    type=ORDER_TYPE_MARKET,
-    quantity=100,
-    price='0.001')
-
-order = client.order_market_buy(
-    symbol='BNBBTC',
-    quantity=100)
-
-
-# Single Test Order for ETHBTC
-# creating a test order returns an empty response by design if the order would be valid (see the official docs). 
-# You would get an error in the response if there were a problem with it, so the fact that your response is empty means success.
-i=1
-symbol = 'ETHBTC'
-order = client.create_test_order(
-    symbol=symbol,
-    side=SIDE_BUY,
-    type=ORDER_TYPE_MARKET,
-    quantity=round(pf_value/df_merged['price'][i]*threshold*df_merged['difference'][i],3) 
-)
-
-# Example for i=1 , eth
-i=1
-round(pf_value*threshold*df_merged['difference'][i],6) #how much USDT we need to sell
-round(pf_value/df_merged['price'][i]*threshold*df_merged['difference'][i],6) #how much ETH we need to sell
 
 
 # Extracting the minQty,stepSize, and minNotional to avoid errors: ---------------
@@ -202,27 +172,27 @@ index = range(10)
 columns = ['symbol', 'minQty', 'minNotional', 'stepSize']
 filters = pd.DataFrame(index=index, columns=columns)
 
-# Transform filters to a dataframe (not needed necessarily)
-info_df = pd.DataFrame.from_dict(info['filters'])
-
-
-i=2
-if df_merged['symbol'][i] == 'USDTBTC' or df_merged['symbol'][i] == 'BTCBTC':
-    # Get filter values 
-    print('BTCBTC or USDTBTC')
-else:
-    print('not BTCBTC or USDTBTC')
-
-
-
 
 # Run a loop to get all values for every currency
 for i in range(len(df_merged)):
     
     symbol = df_merged['symbol'][i]
 
-    if df_merged['symbol'][i] == 'USDTBTC' or df_merged['symbol'][i] == 'BTCBTC':
-        print('BTCBTC or USDTBTC')
+    if df_merged['symbol'][i] == 'BTCBTC':
+        #leave USDTBTC as it is
+        filters['symbol'][i] = symbol
+        print('\nBTCBTC')
+    elif df_merged['symbol'][i] == "USDTBTC":
+        #change USDTBTC to BTCUSDT
+        symbol = 'BTCUSDT'
+        # get filter values 
+        info = client.get_symbol_info(symbol) 
+
+        # extract needed files
+        filters['symbol'][i] = symbol
+        filters['minQty'][i] = info['filters'][2]['minQty']
+        filters['minNotional'][i] = info['filters'][3]['minNotional']
+        filters['stepSize'][i] = info['filters'][2]['stepSize']
     else:
         # get filter values 
         info = client.get_symbol_info(symbol) 
@@ -233,8 +203,10 @@ for i in range(len(df_merged)):
         filters['minNotional'][i] = info['filters'][3]['minNotional']
         filters['stepSize'][i] = info['filters'][2]['stepSize']
 
+print(filters)
 
 
+"""
 # ERRORS: ---------------
 
 #checks for the keys in the dictionary
@@ -253,47 +225,72 @@ print('Minimum Order Amount: ' + info['filters'][2]['minQty'])
 print('Minimum Notional: ' + info['filters'][3]['minNotional'])
 
 # 3. Error "LOT SIZE": This appears when either min qt, max qt, stepSize, or min notional is violated
-# Get stepSiez
+# Get stepSize
 print('stepSize: ' + info['filters'][2]['stepSize'])
+"""
 
+
+# For Loop for Rebalancing (Work in Progress) -----------------------------------------
+
+# exchange USDTBTC for the inverse as only BTCUSDT exists as a trading pair
+df_merged['symbol'] = df_merged['symbol'].replace(['USDTBTC'],'BTCUSDT')
+# merge dataframes
+df_merged = pd.merge(df_merged, filters, how ='left', on='symbol')
+#transform columns to numeric
+df_merged['difference'] = pd.to_numeric(df_merged['difference'])
+df_merged['portfolio weights'] = pd.to_numeric(df_merged['portfolio weights'])
+df_merged['minQty'] = pd.to_numeric(df_merged['minQty'])
+df_merged['minNotional'] = pd.to_numeric(df_merged['minNotional'])
+df_merged['stepSize'] = pd.to_numeric(df_merged['stepSize'])
+#check for types
+df_merged.dtypes
+
+
+
+# Test if minQty, minNotional and account for the stepSize
+print('\n')
+for i in range(len(df_merged)):
+    if df_merged['symbol'][i] == 'BTCBTC':
+        print('will pass as it is BTCBTC')
+    elif df_merged['symbol'][i] != 'BTCBTC':
+        # trading rules
+        symbol= df_merged['symbol'][i]
+        minNotional = df_merged['minNotional'][i]
+        stepSize = df_merged['stepSize'][i]
+        minQty = df_merged['minQty'][i]
+        price = df_merged['price'][i]
+        round_value = min(int(1/stepSize),3)
+        quantity = abs(round(df_merged['difference'][i]*threshold*-1*pf_value,round_value))
+
+        # check for minQty, minNotional, stepSize
+        if quantity < minQty:
+            print(symbol, quantity, 'is smaller than minQty: ', minQty)
+        if quantity*price < minNotional:
+            print(symbol, quantity, 'is smaller than minNotional: ', minNotional)
+        else:
+            print(symbol, ' passed all tests')
 
 
 """
-#-----------------------------------------
-# For Loop for Rebalancing (Work in Progress)
+# Sell order
+if df_merged['difference'][i] < 0:
+    order = client.create_test_order(
+        symbol= symbol,
+        side=SIDE_SELL,
+        type=ORDER_TYPE_MARKET,
+        quantity = quantity
+        )
+    print(df_merged['symbol'][i] + ': sell order')
+    print(order)
 
-for i in range(len(df_merged)):
-    # Sell order
-    if df_merged['difference'][i] < 0:
-        order = client.create_test_order(
-            symbol= df_merged['symbol'][i],
-            side=SIDE_SELL,
-            type=ORDER_TYPE_MARKET,
-            quantity = round(df_merged['difference'][i]*threshold*-1*pf_value,2)
-            )
-        print(df_merged['symbol'][i] + ': sell order')
-        print(order)
-    # Buy order
-    if df_merged['difference'][i] > 0:
-        order = client.create_test_order(
-            symbol= df_merged['symbol'][i],
-            side=SIDE_BUY,
-            type=ORDER_TYPE_MARKET,
-            quantity = round(df_merged['difference'][i]*threshold*pf_value,2)
-            )
-        print(df_merged['symbol'][i] +': buy order')
-        print(order)
-
-
-order = client.create_order(
-    symbol='BNBBTC',
-    side=SIDE_BUY,
-    type=ORDER_TYPE_LIMIT,
-    timeInForce=TIME_IN_FORCE_GTC,
-    quantity=100,
-    price='0.00001')
-
-
-# Without USDT
-df_merged['symbol'] = df_merged['symbol'].str[:-4]
+# Buy order
+if df_merged['difference'][i] > 0:
+    order = client.create_test_order(
+        symbol= symbol,
+        side=SIDE_BUY,
+        type=ORDER_TYPE_MARKET,
+        quantity = quantity
+        )
+    print(df_merged['symbol'][i] +': buy order')
+    print(order)
 """

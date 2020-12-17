@@ -255,7 +255,6 @@ from decimal import *
 
 for i in range(len(df_merged)):
     try: 
-
         symbol= df_merged['symbol'][i]
         minNotional = df_merged['minNotional'][i]
         stepSize = df_merged['stepSize'][i]
@@ -264,7 +263,7 @@ for i in range(len(df_merged)):
         difference = df_merged['difference'][i]
 
         # how many do we buy?
-        quantity = pf_value_usdt * threshold * difference / price
+        quantity = abs(pf_value_usdt * threshold * difference / price)
 
         # round the decimals
         decimals = abs(int(f'{stepSize:e}'.split('e')[-1]))
@@ -278,15 +277,27 @@ for i in range(len(df_merged)):
         else:
             print(symbol, ' passed all tests')
 
-        # Test order
-        order = client.create_test_order(
-                symbol= symbol,
-                side=SIDE_BUY,
-                type=ORDER_TYPE_MARKET,
-                quantity = quantity
-                )
+        # Test order BUY
+        if df_merged['difference'][i] > 0:
+            order = client.create_test_order(
+                    symbol= symbol,
+                    side=SIDE_BUY,
+                    type=ORDER_TYPE_MARKET,
+                    quantity = quantity
+                    )
 
-        print(df_merged['symbol'][i], ': order: ', order)
+            print(df_merged['symbol'][i], ': BUY order: ', order)
+
+        # Test order SELL
+        elif df_merged['difference'][i] < 0:
+            order = client.create_test_order(
+                    symbol= symbol,
+                    side=SIDE_SELL,
+                    type=ORDER_TYPE_MARKET,
+                    quantity = quantity
+                    )
+
+            print(df_merged['symbol'][i], ': SELL order: ', order)
     except:
         print('error')
 

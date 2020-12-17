@@ -273,9 +273,9 @@ for i in range(len(df_merged)):
 # For Loop for Rebalancing (Work in Progress) -----------------------------------------
 print('\n')
 
-from decimal import *
 
 for i in range(len(df_merged)):
+    
     try:
         symbol= df_merged['symbol'][i]
         minNotional = df_merged['minNotional'][i]

@@ -229,8 +229,7 @@ print('Minimum Notional: ' + info['filters'][3]['minNotional'])
 print('stepSize: ' + info['filters'][2]['stepSize'])
 """
 
-
-# For Loop for Rebalancing (Work in Progress) -----------------------------------------
+# Test if minQty, minNotional and account for the stepSize -------------------------------
 
 # exchange USDTBTC for the inverse as only BTCUSDT exists as a trading pair
 df_merged['symbol'] = df_merged['symbol'].replace(['USDTBTC'],'BTCUSDT')
@@ -246,8 +245,6 @@ df_merged['stepSize'] = pd.to_numeric(df_merged['stepSize'])
 df_merged.dtypes
 
 
-
-# Test if minQty, minNotional and account for the stepSize
 print('\n')
 for i in range(len(df_merged)):
     if df_merged['symbol'][i] == 'BTCBTC':
@@ -271,26 +268,50 @@ for i in range(len(df_merged)):
             print(symbol, ' passed all tests')
 
 
-"""
-# Sell order
-if df_merged['difference'][i] < 0:
-    order = client.create_test_order(
-        symbol= symbol,
-        side=SIDE_SELL,
-        type=ORDER_TYPE_MARKET,
-        quantity = quantity
-        )
-    print(df_merged['symbol'][i] + ': sell order')
-    print(order)
 
-# Buy order
-if df_merged['difference'][i] > 0:
-    order = client.create_test_order(
-        symbol= symbol,
-        side=SIDE_BUY,
-        type=ORDER_TYPE_MARKET,
-        quantity = quantity
-        )
-    print(df_merged['symbol'][i] +': buy order')
-    print(order)
-"""
+
+# For Loop for Rebalancing (Work in Progress) -----------------------------------------
+print('\n')
+
+from decimal import *
+
+for i in range(len(df_merged)):
+    try:
+        symbol= df_merged['symbol'][i]
+        minNotional = df_merged['minNotional'][i]
+        stepSize = df_merged['stepSize'][i]
+        minQty = df_merged['minQty'][i]
+        price = df_merged['price'][i]
+        #if we have a stepSize of 1 we want to round to 0 decimals, else we want to round to a max of 3 decimals
+        if stepSize == 1:
+            round_value = 0
+        elif stepSize != 1:
+            round_value = str(stepSize)
+            round_value = round_value[::-1].find('.')
+        round_value = min(round_value,3)
+        quantity = abs(round(df_merged['difference'][i]*threshold*-1*pf_value,round_value))
+
+        # Sell order
+        if df_merged['difference'][i] < 0:
+            order = client.create_test_order(
+                symbol= symbol,
+                side=SIDE_SELL,
+                type=ORDER_TYPE_MARKET,
+                quantity = quantity
+                )
+            print(df_merged['symbol'][i], ': sell order: ', order)
+
+        # Buy order
+        elif df_merged['difference'][i] > 0:
+            order = client.create_test_order(
+                symbol= symbol,
+                side=SIDE_BUY,
+                type=ORDER_TYPE_MARKET,
+                quantity = quantity
+                )
+            print(df_merged['symbol'][i], ': buy order: ', order)
+
+    except:  
+        print(df_merged['symbol'][i] +': error did not work')
+
+

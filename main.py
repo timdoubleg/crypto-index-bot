@@ -249,9 +249,74 @@ print(df_merged.dtypes)
 
 
 
-# Test if minQty, minNotional and account for the stepSize -------------------------------
+# MANUAL: Test if minQty, minNotional and account for the stepSize -------------------------------
 from decimal import *
 
+i = 8
+symbol= df_merged['symbol'][i]
+minNotional = df_merged['minNotional'][i]
+stepSize = df_merged['stepSize'][i]
+minQty = df_merged['minQty'][i]
+price = df_merged['price'][i]
+difference = df_merged['difference'][i]
+
+# how many do we buy?
+quantity = abs(pf_value_usdt * threshold * difference / price)
+
+# round the decimals
+decimals = abs(int(f'{stepSize:e}'.split('e')[-1]))
+quantity = round(quantity, decimals)
+
+# run the tests
+if quantity < minQty:
+    print(symbol, quantity, 'is smaller than minQty: ', minQty)
+if quantity*price < minNotional:
+    print(symbol, quantity, 'is smaller than minNotional: ', minNotional)
+else:
+    print(symbol, ' passed all tests')
+
+# Test order BUY
+if df_merged['difference'][i] > 0:
+    order = client.create_test_order(
+            symbol= symbol,
+            side=SIDE_BUY,
+            type=ORDER_TYPE_MARKET,
+            quantity = quantity
+            )
+
+    print(df_merged['symbol'][i], ': BUY order: ', order)
+
+# Test order SELL
+elif df_merged['difference'][i] < 0:
+    order = client.create_test_order(
+            symbol= symbol,
+            side=SIDE_SELL,
+            type=ORDER_TYPE_MARKET,
+            quantity = quantity
+            )
+
+    print(df_merged['symbol'][i], ': SELL order: ', order)
+
+client.markets['NEO/BTC']['limits']['cost']['min']
+
+"""
+import math
+
+coins_available = df_merged['free'][i] 
+ticks = {}
+for filt in client.get_symbol_info('ETHUSDT')['filters']:
+    if filt['filterType'] == 'LOT_SIZE':
+        ticks['ETH'] = filt['stepSize'].find('1') - 2
+        break
+order_quantity = math.floor(coins_available * 10**ticks['ETH']) / float(10**ticks['ETH'])
+"""
+
+
+
+
+
+"""
+# FOR LOOP: Test if minQty, minNotional and account for the stepSize -------------------------------
 
 for i in range(len(df_merged)):
     try: 
@@ -301,7 +366,7 @@ for i in range(len(df_merged)):
     except:
         print('error')
 
-
+"""
 
 
 

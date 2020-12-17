@@ -265,7 +265,7 @@ for i in range(len(df_merged)):
         minQty = df_merged['minQty'][i]
         price = df_merged['price'][i]
         round_value = min(int(1/stepSize),3)
-        quantity = abs(round(df_merged['difference'][i]*threshold*-1*pf_value,round_value))
+        quantity = abs(round(df_merged['difference'][i]*threshold*pf_value_btc,round_value))
 
         # check for minQty, minNotional, stepSize
         if quantity < minQty:
@@ -306,7 +306,7 @@ for i in range(len(df_merged)):
             round_value = str(stepSize)
             round_value = round_value[::-1].find('.')
         round_value = min(round_value,3)
-        quantity = abs(round(df_merged['difference'][i]*threshold*pf_value,round_value))
+        quantity = abs(round(df_merged['difference'][i]*threshold*pf_value_btc,round_value))
 
         # Sell order
         if df_merged['difference'][i] < 0:

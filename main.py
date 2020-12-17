@@ -28,7 +28,7 @@ coin_balance = client.get_account()
 coin_balance = pd.DataFrame.from_dict(coin_balance['balances'])
 print("User's Balace: \n", coin_balance)
 
-# Transform values to integers and check if there are some assets in your binance account
+#Transform values to integers and check if there are some assets in your binance account
 try:
     coin_balance['free'] = pd.to_numeric(coin_balance['free'])
     coin_balance['locked'] = pd.to_numeric(coin_balance['locked'])
@@ -273,13 +273,6 @@ for i in range(len(df_merged)):
 # For Loop for Rebalancing (Work in Progress) -----------------------------------------
 print('\n')
 
-<<<<<<< Updated upstream
-=======
-# for i = 3 we have a scientific output for stepSize
-if "e" in stepSize: 
-    
-
->>>>>>> Stashed changes
 
 for i in range(len(df_merged)):
 

@@ -168,7 +168,7 @@ print(client.get_all_orders(symbol=df_merged['symbol'][i]))
 """
 
 # Extracting the minQty,stepSize, and minNotional to avoid errors: ---------------
-
+print('\n')
 # Create an empty dataframe
 index = range(len(df_merged))
 columns = ['symbol', 'minQty', 'minNotional', 'stepSize']
@@ -208,6 +208,7 @@ print(filters)
 
 """
 # ERRORS: ---------------
+print('\n')
 
 #checks for the keys in the dictionary
 info = client.get_symbol_info('BTCUSDT') 
@@ -232,6 +233,7 @@ print('stepSize: ' + info['filters'][2]['stepSize'])
 
 
 # Transform to numeric -------------------------------
+print('\n')
 
 
 # exchange USDTBTC for the inverse as only BTCUSDT exists as a trading pair
@@ -250,6 +252,7 @@ print(df_merged.dtypes)
 
 
 # MANUAL: Test if minQty, minNotional and account for the stepSize -------------------------------
+print('\n')
 
 # merge 
 df_merged = pd.merge(df_merged, prices_binance, on='symbol', how='left')
@@ -313,6 +316,7 @@ except:
 
 
 # FOR LOOP: Test if minQty, minNotional and account for the stepSize -------------------------------
+print('\n')
 
 for i in range(len(df_merged)):
     try: 

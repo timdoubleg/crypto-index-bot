@@ -44,7 +44,7 @@ This project requires the following packages: pandas, python-binance, pycoingeck
 
 1) In order to run this project, install the required packages using the requirements.txt file: 
     ```
-    $ pip freeze > requirements.txt
+    $ pip3 freeze > requirements.txt
     $ pip3 install -r requirements.txt
     ```
 2) Put your own "API_KEY" and "API_SECRET" from your Binance Account in config.py and run config.py code. 

@@ -169,11 +169,10 @@ for i in range(len(df_merged)):
         print(df_merged['symbol'][i] + ': will execute this order')
 """
 
-
 # Extracting the minQty,stepSize, and minNotional to avoid errors: ---------------
 
 # Create an empty dataframe
-index = range(10)
+index = range(len(df_merged))
 columns = ['symbol', 'minQty', 'minNotional', 'stepSize']
 filters = pd.DataFrame(index=index, columns=columns)
 

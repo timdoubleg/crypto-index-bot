@@ -7,10 +7,6 @@ import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 
 
-# hey guys let's test this ------------
-
-
-
 cg = CoinGeckoAPI()
 
 # Although fine for tutorial purposes, your API Keys should never be placed directly in the script like below. 
@@ -106,8 +102,6 @@ for i in range(len(df)):
     df['portfolio weights'][i] = df['USDT'][i]/portfolio_sum
 
 
-
-
 # Drop all not needed values from the df price 
 df_table_columns = ['symbol', 'price', 'free', 'portfolio weights', 'USDT']
 df = df.drop(columns=[col for col in df if col not in df_table_columns])
@@ -162,6 +156,7 @@ price_btc = df_merged['price'][index][0]
 pf_value_usdt = df_merged['USDT'].sum()
 pf_value_btc = pf_value_usdt/price_btc
 
+print('\n')
 print('Your USDT portfolio value is: ', pf_value_usdt)
 print('Your btc portfolio value is: ', pf_value_btc)
 
@@ -238,6 +233,7 @@ print('stepSize: ' + info['filters'][2]['stepSize'])
 """
 
 # Test if minQty, minNotional and account for the stepSize -------------------------------
+from decimal import *
 
 # exchange USDTBTC for the inverse as only BTCUSDT exists as a trading pair
 df_merged['symbol'] = df_merged['symbol'].replace(['USDTBTC'],'BTCUSDT')
@@ -253,6 +249,46 @@ df_merged['stepSize'] = pd.to_numeric(df_merged['stepSize'])
 df_merged.dtypes
 
 
+i = 2
+symbol= df_merged['symbol'][i]
+minNotional = df_merged['minNotional'][i]
+stepSize = df_merged['stepSize'][i]
+minQty = df_merged['minQty'][i]
+price = df_merged['price'][i]
+decimals = abs(Decimal(round_value).as_tuple().exponent)
+round_value = str(stepSize)
+
+e = abs(Decimal(round_value).as_tuple().exponent)
+index = df_merged.query('symbol == "BTCBTC"').index
+
+
+if df_merged['symbol'][i] == 'BTCBTC':
+    print('will pass as it is BTCBTC')
+elif df_merged['symbol'][i] != 'BTCBTC':
+    # trading rules
+    symbol= df_merged['symbol'][i]
+    minNotional = df_merged['minNotional'][i]
+    stepSize = df_merged['stepSize'][i]
+    minQty = df_merged['minQty'][i]
+    price = df_merged['price'][i]
+    decimals = abs(Decimal(round_value).as_tuple().exponent)
+
+    round_value = min(decimals,3)
+    price_symbol = df_merged['price'][index][0]
+
+    quantity = abs(round(df_merged['difference'][i]*threshold*pf_value_usdt/price_symbol,round_value))
+
+    # check for minQty, minNotional, stepSize
+    if quantity < minQty:
+        print(symbol, quantity, 'is smaller than minQty: ', minQty)
+    if quantity*price < minNotional:
+        print(symbol, quantity, 'is smaller than minNotional: ', minNotional)
+    else:
+        print(symbol, ' passed all tests')
+
+
+
+
 print('\n')
 for i in range(len(df_merged)):
     if df_merged['symbol'][i] == 'BTCBTC':
@@ -264,7 +300,10 @@ for i in range(len(df_merged)):
         stepSize = df_merged['stepSize'][i]
         minQty = df_merged['minQty'][i]
         price = df_merged['price'][i]
+
         round_value = min(int(1/stepSize),3)
+        price_symbol = df_merged['price'][index][0]
+
         quantity = abs(round(df_merged['difference'][i]*threshold*pf_value_btc,round_value))
 
         # check for minQty, minNotional, stepSize
@@ -276,20 +315,10 @@ for i in range(len(df_merged)):
             print(symbol, ' passed all tests')
 
 
-
-
 # For Loop for Rebalancing (Work in Progress) -----------------------------------------
 print('\n')
 
 # for i = 3 we have a scientific output for stepSize
-i = 3
-stepSize = df_merged['stepSize'][i]
-
-
-if "e" in stepSize: 
-    round_value[::-1]
-    
-
 
 for i in range(len(df_merged)):
 
@@ -330,5 +359,4 @@ for i in range(len(df_merged)):
 
     except:  
         print(df_merged['symbol'][i] +': error did not work')
-
 

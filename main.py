@@ -3,7 +3,7 @@ from binance.client import Client # Import the Binance Client
 from binance.websockets import BinanceSocketManager # Import the Binance Socket Manager
 import pandas as pd
 
-# Turn off warnings
+# Turn off warnings test 
 pd.options.mode.chained_assignment = None  # default='warn'
 
 

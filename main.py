@@ -154,9 +154,17 @@ from binance.enums import *
 
 # Threshold as we need to account for fees
 threshold = 0.95
+
+# calculate total pf values
+index = df_merged.query('symbol == "BTCBTC"').index
+price_btc = df_merged['price'][index][0]
 # Calculate the total portfolio value
-pf_value = df_merged['USDT'].sum()
-print('Your portfolio value is: ', pf_value)
+pf_value_usdt = df_merged['USDT'].sum()
+pf_value_btc = pf_value_usdt/price_btc
+
+print('Your USDT portfolio value is: ', pf_value_usdt)
+print('Your btc portfolio value is: ', pf_value_btc)
+
 
 """
 # Get all open orders
@@ -273,13 +281,15 @@ for i in range(len(df_merged)):
 # For Loop for Rebalancing (Work in Progress) -----------------------------------------
 print('\n')
 
-<<<<<<< Updated upstream
-=======
 # for i = 3 we have a scientific output for stepSize
+i = 3
+stepSize = df_merged['stepSize'][i]
+
+
 if "e" in stepSize: 
+    round_value[::-1]
     
 
->>>>>>> Stashed changes
 
 for i in range(len(df_merged)):
 
@@ -296,7 +306,7 @@ for i in range(len(df_merged)):
             round_value = str(stepSize)
             round_value = round_value[::-1].find('.')
         round_value = min(round_value,3)
-        quantity = abs(round(df_merged['difference'][i]*threshold*-1*pf_value,round_value))
+        quantity = abs(round(df_merged['difference'][i]*threshold*pf_value,round_value))
 
         # Sell order
         if df_merged['difference'][i] < 0:

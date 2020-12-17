@@ -273,6 +273,13 @@ for i in range(len(df_merged)):
 # For Loop for Rebalancing (Work in Progress) -----------------------------------------
 print('\n')
 
+<<<<<<< Updated upstream
+=======
+# for i = 3 we have a scientific output for stepSize
+if "e" in stepSize: 
+    
+
+>>>>>>> Stashed changes
 
 for i in range(len(df_merged)):
 

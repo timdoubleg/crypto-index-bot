@@ -151,8 +151,9 @@ from binance.enums import *
 
 # Threshold as we need to account for fees
 threshold = 0.95
-i=0
+# Calculate the total portfolio value
 pf_value = df_merged['USDT'].sum()
+print('Your portfolio value is: ', pf_value)
 
 """
 # Get all open orders
@@ -231,6 +232,7 @@ print('Minimum Notional: ' + info['filters'][3]['minNotional'])
 # 3. Error "LOT SIZE": This appears when either min qt, max qt, stepSize, or min notional is violated
 # Get stepSize
 print('stepSize: ' + info['filters'][2]['stepSize'])
+
 """
 
 # Test if minQty, minNotional and account for the stepSize -------------------------------

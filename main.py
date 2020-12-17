@@ -151,7 +151,7 @@ from binance.enums import *
 threshold = 0.95
 
 # calculate total pf values
-index = df_merged.query('symbol == "BTCBTC"').index
+index = df_merged.query('symbol == "BTCUSDT"').index
 price_btc = df_merged['price'][index][0]
 # Calculate the total portfolio value in btc
 pf_value_btc = pf_value_usdt/price_btc
@@ -287,26 +287,29 @@ else:
 
 
 # Test order BUY
-if df_merged['difference'][i] > 0:
-    order = client.create_test_order(
-            symbol= symbol,
-            side=SIDE_BUY,
-            type=ORDER_TYPE_MARKET,
-            quantity = quantity
-            )
+try: 
+    if df_merged['difference'][i] > 0:
+        order = client.create_test_order(
+                symbol= symbol,
+                side=SIDE_BUY,
+                type=ORDER_TYPE_MARKET,
+                quantity = quantity
+                )
 
-    print(df_merged['symbol'][i], ': BUY order: ', order)
+        print(df_merged['symbol'][i], ': BUY order: ', order)
 
 
-# Test order SELL
-elif df_merged['difference'][i] < 0:
-    order = client.create_test_order(
-            symbol= symbol,
-            side=SIDE_SELL,
-            type=ORDER_TYPE_MARKET,
-            quantity = quantity
-            )
-    print(df_merged['symbol'][i], ': SELL order: ', order)
+    # Test order SELL
+    elif df_merged['difference'][i] < 0:
+        order = client.create_test_order(
+                symbol= symbol,
+                side=SIDE_SELL,
+                type=ORDER_TYPE_MARKET,
+                quantity = quantity
+                )
+        print(df_merged['symbol'][i], ': SELL order: ', order)
+except:
+    print('there is an error with', symbol, 'please check it manually')
 
 
 # FOR LOOP: Test if minQty, minNotional and account for the stepSize -------------------------------

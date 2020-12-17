@@ -6,7 +6,6 @@ import pandas as pd
 # Turn off warnings test 
 pd.options.mode.chained_assignment = None  # default='warn'
 
-
 cg = CoinGeckoAPI()
 
 # Although fine for tutorial purposes, your API Keys should never be placed directly in the script like below. 
@@ -112,6 +111,7 @@ df_merged = pd.merge(df, market_cap, how ='left', on='symbol')
 df_merged = df_merged.sort_values(by='market_cap_percentage', ascending=False, na_position='last') 
 df_merged['market_cap_percentage'] = df_merged['market_cap_percentage'].fillna(0)
 
+
 # Calculate the differences
 df_merged['difference'] = df_merged['market_cap_percentage'] - df_merged['portfolio weights']
 
@@ -136,10 +136,11 @@ for element in range(len(df_merged)):
         coin_value = df_merged["difference"][element] * pf_value_usdt
         print(n," Sell " , round(abs(coin_value), 3), "USD worth of" ,df_merged["symbol"][element])
 
+"""
 # Replace USDT by BTC
 df_merged['symbol'] = df_merged['symbol'].str[:-4]
 df_merged['symbol'] = df_merged['symbol'] + 'BTC'
-
+"""
 
 
 # Testing orders -------------------------------------------------------------
@@ -173,14 +174,12 @@ index = range(len(df_merged))
 columns = ['symbol', 'minQty', 'minNotional', 'stepSize']
 filters = pd.DataFrame(index=index, columns=columns)
 
-
-
 # Run a loop to get all values for every currency
 for i in range(len(df_merged)):
     
     symbol = df_merged['symbol'][i]
 
-    if df_merged['symbol'][i] == 'BTCBTC':
+    if df_merged['symbol'][i] == 'USDTUSDT':
         #leave USDTBTC as it is
         filters['symbol'][i] = symbol
     elif df_merged['symbol'][i] == "USDTBTC":
@@ -234,6 +233,7 @@ print('stepSize: ' + info['filters'][2]['stepSize'])
 
 # Transform to numeric -------------------------------
 
+
 # exchange USDTBTC for the inverse as only BTCUSDT exists as a trading pair
 df_merged['symbol'] = df_merged['symbol'].replace(['USDTBTC'],'BTCUSDT')
 # merge dataframes
@@ -250,30 +250,41 @@ print(df_merged.dtypes)
 
 
 # MANUAL: Test if minQty, minNotional and account for the stepSize -------------------------------
+
+# merge 
+df_merged = pd.merge(df_merged, prices_binance, on='symbol', how='left')
+df_merged = df_merged.rename(columns={'price_x': 'price_USDT', 'price_y': 'price_BTC'}) #change name of column
+df_merged['price_BTC'] = pd.to_numeric(df_merged['price_BTC'])
+
+
 from decimal import *
 
-i = 8
+i = 2
 symbol= df_merged['symbol'][i]
 minNotional = df_merged['minNotional'][i]
 stepSize = df_merged['stepSize'][i]
 minQty = df_merged['minQty'][i]
-price = df_merged['price'][i]
+price = df_merged['price_USDT'][i]
 difference = df_merged['difference'][i]
 
+
 # how many do we buy?
-quantity = abs(pf_value_usdt * threshold * difference / price)
+quantity = abs(pf_value_usdt * difference * threshold)
+
 
 # round the decimals
 decimals = abs(int(f'{stepSize:e}'.split('e')[-1]))
 quantity = round(quantity, decimals)
 
+
 # run the tests
 if quantity < minQty:
     print(symbol, quantity, 'is smaller than minQty: ', minQty)
 if quantity*price < minNotional:
-    print(symbol, quantity, 'is smaller than minNotional: ', minNotional)
+    print(symbol, quantity*price, 'is smaller than minNotional: ', minNotional)
 else:
     print(symbol, ' passed all tests')
+
 
 # Test order BUY
 if df_merged['difference'][i] > 0:
@@ -286,6 +297,7 @@ if df_merged['difference'][i] > 0:
 
     print(df_merged['symbol'][i], ': BUY order: ', order)
 
+
 # Test order SELL
 elif df_merged['difference'][i] < 0:
     order = client.create_test_order(
@@ -294,28 +306,9 @@ elif df_merged['difference'][i] < 0:
             type=ORDER_TYPE_MARKET,
             quantity = quantity
             )
-
     print(df_merged['symbol'][i], ': SELL order: ', order)
 
-client.markets['NEO/BTC']['limits']['cost']['min']
 
-"""
-import math
-
-coins_available = df_merged['free'][i] 
-ticks = {}
-for filt in client.get_symbol_info('ETHUSDT')['filters']:
-    if filt['filterType'] == 'LOT_SIZE':
-        ticks['ETH'] = filt['stepSize'].find('1') - 2
-        break
-order_quantity = math.floor(coins_available * 10**ticks['ETH']) / float(10**ticks['ETH'])
-"""
-
-
-
-
-
-"""
 # FOR LOOP: Test if minQty, minNotional and account for the stepSize -------------------------------
 
 for i in range(len(df_merged)):
@@ -324,11 +317,11 @@ for i in range(len(df_merged)):
         minNotional = df_merged['minNotional'][i]
         stepSize = df_merged['stepSize'][i]
         minQty = df_merged['minQty'][i]
-        price = df_merged['price'][i]
+        price = df_merged['price_USDT'][i]
         difference = df_merged['difference'][i]
 
         # how many do we buy?
-        quantity = abs(pf_value_usdt * threshold * difference / price)
+        quantity = abs(pf_value_usdt * threshold * difference)
 
         # round the decimals
         decimals = abs(int(f'{stepSize:e}'.split('e')[-1]))
@@ -338,10 +331,13 @@ for i in range(len(df_merged)):
         if quantity < minQty:
             print(symbol, quantity, 'is smaller than minQty: ', minQty)
         if quantity*price < minNotional:
-            print(symbol, quantity, 'is smaller than minNotional: ', minNotional)
+            print(symbol, quantity*price, 'is smaller than minNotional: ', minNotional)
         else:
             print(symbol, ' passed all tests')
+    except:
+        print('error, something else went wrong')
 
+"""
         # Test order BUY
         if df_merged['difference'][i] > 0:
             order = client.create_test_order(
@@ -351,7 +347,7 @@ for i in range(len(df_merged)):
                     quantity = quantity
                     )
 
-            print(df_merged['symbol'][i], ': BUY order: ', order)
+            print(df_merged['symbol'][i], ': BUY order: ', 'quantity :', quantity, order)
 
         # Test order SELL
         elif df_merged['difference'][i] < 0:
@@ -362,47 +358,11 @@ for i in range(len(df_merged)):
                     quantity = quantity
                     )
 
-            print(df_merged['symbol'][i], ': SELL order: ', order)
-    except:
-        print('error')
-
+            print(df_merged['symbol'][i], ': SELL order: ', 'quantity :', quantity, order)
 """
 
 
-
 """
-# For Loop of Rebalancing
-round_value = str(stepSize)
-e = abs(Decimal(round_value).as_tuple().exponent)
-index = df_merged.query('symbol == "BTCBTC"').index
-
-if df_merged['symbol'][i] == 'BTCBTC':
-    print('will pass as it is BTCBTC')
-elif df_merged['symbol'][i] != 'BTCBTC':
-    # trading rules
-    symbol= df_merged['symbol'][i]
-    minNotional = df_merged['minNotional'][i]
-    stepSize = df_merged['stepSize'][i]
-    minQty = df_merged['minQty'][i]
-    price = df_merged['price'][i]
-    decimals = abs(Decimal(round_value).as_tuple().exponent)
-
-    round_value = min(decimals,3)
-    price_symbol = df_merged['price'][index][0]
-
-    quantity = abs(round(df_merged['difference'][i]*threshold*pf_value_usdt/price_symbol,round_value))
-
-    # check for minQty, minNotional, stepSize
-    if quantity < minQty:
-        print(symbol, quantity, 'is smaller than minQty: ', minQty)
-    if quantity*price < minNotional:
-        print(symbol, quantity, 'is smaller than minNotional: ', minNotional)
-    else:
-        print(symbol, ' passed all tests')
-
-
-
-
 # For Loop for Rebalancing (Work in Progress) -----------------------------------------
 print('\n')
 

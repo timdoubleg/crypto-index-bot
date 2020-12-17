@@ -28,11 +28,14 @@ coin_balance = client.get_account()
 coin_balance = pd.DataFrame.from_dict(coin_balance['balances'])
 print("User's Balace: \n", coin_balance)
 
-# Transform values to integers
-coin_balance['free'] = pd.to_numeric(coin_balance['free'])
-coin_balance['locked'] = pd.to_numeric(coin_balance['locked'])
-coin_balance.dtypes
-
+# Transform values to integers and check if there are some assets in your binance account
+try:
+    coin_balance['free'] = pd.to_numeric(coin_balance['free'])
+    coin_balance['locked'] = pd.to_numeric(coin_balance['locked'])
+    coin_balance.dtypes
+except:
+    print("You do not have any assets in your binance account. Please deposit some coins and run the code.")
+    exit()
 
 # Get market caps from coingecko
 market_cap = pd.DataFrame.from_dict(cg.get_global()) #get the data from the api
@@ -102,10 +105,7 @@ portfolio_sum = portfolio_sum.sum()
 for i in range(len(df)):
     df['portfolio weights'][i] = df['USDT'][i]/portfolio_sum
 
-"""
-to be removed
-# Probably not necessary
-df.loc[df['symbol'] == 'USDTUSDT']""""
+
 
 
 # Drop all not needed values from the df price 
@@ -275,7 +275,7 @@ print('\n')
 
 
 for i in range(len(df_merged)):
-    
+
     try:
         symbol= df_merged['symbol'][i]
         minNotional = df_merged['minNotional'][i]

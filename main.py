@@ -7,6 +7,10 @@ import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 
 
+# hey guys let's test this ------------
+
+
+
 cg = CoinGeckoAPI()
 
 # Although fine for tutorial purposes, your API Keys should never be placed directly in the script like below. 

@@ -324,7 +324,7 @@ for i in range(len(df_merged)):
         difference = df_merged['difference'][i]
 
         # how many do we buy?
-        quantity = abs(pf_value_usdt * threshold * difference)
+        quantity = abs((pf_value_usdt * threshold * difference)/price)
 
         # round the decimals
         decimals = abs(int(f'{stepSize:e}'.split('e')[-1]))

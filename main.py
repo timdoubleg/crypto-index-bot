@@ -101,8 +101,11 @@ portfolio_sum = df['USDT']
 portfolio_sum = portfolio_sum.sum()
 for i in range(len(df)):
     df['portfolio weights'][i] = df['USDT'][i]/portfolio_sum
+
+"""
+to be removed
 # Probably not necessary
-df.loc[df['symbol'] == 'USDTUSDT'] 
+df.loc[df['symbol'] == 'USDTUSDT']""""
 
 
 # Drop all not needed values from the df price 
@@ -158,16 +161,7 @@ pf_value = df_merged['USDT'].sum()
 # Get all open orders
 print(client.get_all_orders(symbol=df_merged['symbol'][i]))
 # If this is empty then we have no open orders
-
-
-# If we have USDT in our portfolio, we cannot sell directly USDT i, but we buy other cryptos with it
-for i in range(len(df_merged)):
-    if df_merged['symbol'][i] == 'USDTUSDT':
-        print(df_merged['symbol'][i] + ': will not execute this order')
-    else:
-        print(df_merged['symbol'][i] + ': will execute this order')
 """
-
 
 # Extracting the minQty,stepSize, and minNotional to avoid errors: ---------------
 

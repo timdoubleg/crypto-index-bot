@@ -38,11 +38,11 @@ In order to do so, the code works as follows:
 
 5) Based on this comparison, the buy and sell orders are made so that your binance portfolio's assets are weighted as the top ten cryptocurrencies by market capitalization. However, some of the orders might be below the minimum quantity or the minimum notional value you can buy. This is mostly due to the Bitcoin dominance of the market. For instance, on 18.12.20 Bitcoin has a market cap of 64%, while the smallest coin in our top ten index (BNB) has 0.7%.
 
-Hence, the code will propose you two possibilities ```Do you want to proceed with rebalancing? y/n``` 
+Hence, the code will propose you two possibilities ```Do you want to proceed with rebalancing? y/n```
 
-    1)  ```y``` will disregard the smaller coins allocation and rebalance the portfolio based on the coins that you are able to buy within the trading rules of Binance. (Please note that in that case your portfolio will not reflect the ten biggest cryptocurrencies and will disregard the smaller ones)
+    1)  "y" will disregard the smaller coins allocation and rebalance the portfolio based on the coins that you are able to buy within the trading rules of Binance. (Please note that in that case your portfolio will not reflect the ten biggest cryptocurrencies and will disregard the smaller ones)
 
-    2)  ```n``` will not place the orders so that you can deposit additional funds in order to have enough assets to enable your portfolio to reflect the top 10 cryptocurrencies' allocation.
+    2)  "n" will not place the orders so that you can deposit additional funds in order to have enough assets to enable your portfolio to reflect the top 10 cryptocurrencies' allocation.
 
 ## Assumptions
 The code assumes that you already have some cryptocurrencies on your binance account.

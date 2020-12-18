@@ -233,7 +233,6 @@ df_merged = df_merged.reset_index(drop=True)
 # Print the rebalancing process ----------------------------------------------------------------
 print("\n Total USDT:",pf_value_usdt, "\n")
 
-
 for i in range(len(df_merged)):
 
     symbol = df_merged['symbol'][i]

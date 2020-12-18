@@ -4,7 +4,7 @@ from binance.websockets import BinanceSocketManager # Import the Binance Socket 
 import pandas as pd
 import decimal 
 import config
-from binance.enums import *
+from binance.enums import SIDE_BUY, SIDE_SELL, ORDER_TYPE_MARKET
 
 # Turn off warnings test. The warning arrises with pandas. 
 # The code has been checked and the warning is a false positive.

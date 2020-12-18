@@ -80,7 +80,6 @@ prices_binance = prices_binance.append({'symbol': 'USDTUSDT', "price": 1}, ignor
 prices_binance.loc[prices_binance['symbol']=='USDTUSDT'] # Check for USDT again, now we find it
 print("List of Prices: \n", prices_binance)
 
-
 # Create columns for later and some more data handling
 coin_balance['portfolio weights'] = 'NA'
 coin_balance['USDT'] = 'NA'
@@ -149,7 +148,7 @@ print('\n')
 print('Your USDT portfolio value is: ', pf_value_usdt)
 print('Your BTC portfolio value is: ', pf_value_btc)
 
-# Printing the Rebalancing process orders -------------------------------------------------------------
+# REBALANCING - Printing the Rebalancing process orders -------------------------------------------------------------
 
 # Threshold as we need to account for fees
 threshold = 0.95
@@ -174,7 +173,7 @@ for element in range(len(df_merged)):
         print(n," Sell " , round(abs(coin_value), 3), "USD worth of" ,df_merged["symbol"][element])
 
 
-# Extracting the minQty,stepSize, and minNotional to avoid errors: ---------------
+# BINANCE TRADING FILTERS - Extracting the minQty,stepSize, and minNotional to avoid errors: ---------------
 print('\n')
 # Create an empty dataframe
 index = range(len(df_merged))

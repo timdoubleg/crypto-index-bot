@@ -17,7 +17,7 @@ Authors: Tim Graf, Marvin Scherer, Henri de Montpellier
 
 This is the official code for a project in the course "Programming with Advanced Computer Languages" at the University of St. Gallen. The codes aim at rebalancing your assets on your binance account in order to reflect our index. The index is based on the ten biggest cryptoccurencies by market capitalization. Therefore, running the code will rebalance your binance portfolio so that it mimics the corresponding weights of the top ten cryptocurrencies' market capitalization.
 
-Technology: Python 3.6
+Technology: Python 3
 
 In order to do so, the code works as follows:
 
@@ -33,11 +33,16 @@ In order to do so, the code works as follows:
 
 ![Adjusted_MC](/Adjusted_MC.png)
 
-* Finally, based on this comparison, the buy and sell orders are made so that your binance portfolio's assets are equally weighted as the top ten cryptocurrencies by market capitalization.
+* Finally, based on this comparison, the buy and sell orders are made so that your binance portfolio's assets are equally weighted as the top ten cryptocurrencies by market capitalization. However, some of the orders might be below the minimum quantity or the minimum value you can buy. This is mostly due to the important Bitcoin dominance of the market. Therefore, the code will propose you two possibilities: 
+
+1) You can disregard the smaller coins allocation and rebalance the portfolio based on the coins that are buyable.     (Please note that in that case your portfolio will not reflect the ten biggest cryptocurrencies and will disregard the smaller ones)
+
+2) You can import additional assets on your binance account in order for all the orders to work and your portffolio to reflect the ten biggest cryptocurrencies.
 
 ## Assumption: 
 The code assumes that you already have some cryptocurrencies on your binance account.
-The code rebalances 90% of your assets in order to keep 10% for any transaction costs.
+The code rebalances 95% of your assets in order to keep 10% for any transaction costs.
+
 
 # Installation
 This project requires the following packages: pandas, python-binance, pycoingecko.

@@ -138,20 +138,12 @@ print("\nRebalancing: \n ", df_merged)
 # Reset index
 df_merged = df_merged.reset_index(drop=True) 
 
-
-"""
-# Replace USDT by BTC
-df_merged['symbol'] = df_merged['symbol'].str[:-4]
-df_merged['symbol'] = df_merged['symbol'] + 'BTC'
-"""
-
-# calculate total pf values
+# Calculate total pf values
 pf_value_usdt = df_merged["USDT"].sum()
 # Calculate the total portfolio value in btc
 pf_value_btc = pf_value_usdt/price_btc
 
-
-
+# Print portfolio values
 print('\n')
 print('Your USDT portfolio value is: ', pf_value_usdt)
 print('Your BTC portfolio value is: ', pf_value_btc)

@@ -5,8 +5,10 @@ import pandas as pd
 import decimal 
 import binance.enums
 
-# Turn off warnings test 
-pd.options.mode.chained_assignment = None  # default='warn'
+# Turn off warnings test. The warning arrises with pandas. 
+# The code has been checked and it is a false positive.
+# default='warn'
+pd.options.mode.chained_assignment = None  
 
 # BINANCE ------------------------------------
 # Although fine for tutorial purposes, your API Keys should never be placed directly in the script like below. 

@@ -1,11 +1,13 @@
-# PWACL
+# Crypto Index Bot
+
 **Building an automated TOP 10- index for your binance account in Python**
+***Class:** *Programming with advanced computer languages*
+**Supervisor:** Dr. Prof. Mario Silic
+**Date:** 04.11.2020 - 18.12.2020
 
-**Date**: 04.11.2020 - 18.12.2020
+**Technology:** Python 3
 
-**Technology**: Python 3
-
-**Authors**: Tim Graf, Marvin Scherer, Henri de Montpellier
+**Authors:** Tim Graf, Marvin Scherer, Henri de Montpellier
 
 ## Table of contents
 * [Description](#Description)
@@ -15,18 +17,20 @@
 
 # Description:
 
-This is the official code for a project in the course _"Programming with Advanced Computer Languages"_ at the University of St. Gallen. The codes aim at rebalancing your assets on your binance account in order to reflect our index. The index is based on the ten biggest cryptoccurencies by market capitalization. Therefore, running the code will rebalance your binance portfolio so that it mimics the corresponding weights of the top ten cryptocurrencies' market capitalization.
+This is the official code for a project in the course _"Programming with Advanced Computer Languages"_ at the University of St. Gallen (HSG). The code rebalances your assets on your binance account in order to reflect a crypto index. The index is based on the ten biggest cryptoccurencies by market capitalization. Therefore, running the code will rebalance your binance portfolio so that it mimics the corresponding weights of the top ten cryptocurrencies' market capitalization.
 
 
 In order to do so, the code works as follows:
 
 * Firstly, the project retrieves your asset's allocation data from your binance account.
 
-* Secondly, the project retrieves the cryptocurrencies' prices from binance and the market capitalization data from https://www.coingecko.com. As follows:
+* Secondly, the project retrieves the cryptocurrencies' prices from binance and the market capitalization data from https://www.coingecko.com.
 
 * Thirdly, the different targeted weights based on the ten biggest cryptocurrencies market capitalization are computed.
 
-* Fourthly, these targeted weights are compared to your current assets' allocation in your binance portfolio. As follows:
+* Fourthly, these targeted weights are compared to your current assets' allocation in your binance portfolio.
+    
+    ![alt text](/img.png)
 
 * Finally, based on this comparison, the buy and sell orders are made so that your binance portfolio's assets are equally weighted as the top ten cryptocurrencies by market capitalization. However, some of the orders might be below the minimum quantity or the minimum value you can buy. This is mostly due to the important Bitcoin dominance of the market. Therefore, the code will propose you two possibilities ```Do you want to proceed with rebalancing? y/n``` 
 

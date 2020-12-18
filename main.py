@@ -33,7 +33,7 @@ try:
     coin_balance['locked'] = pd.to_numeric(coin_balance['locked'])
     coin_balance.dtypes
 except:
-    print("You do not have any assets in your binance account. Please deposit some coins and run the code.")
+    print("You do not have any assets in your binance account. Please deposit some coins in your account and run the code.")
     exit()
 
 # BINANCE: Get prices from Binance

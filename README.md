@@ -35,7 +35,9 @@ In order to do so, the code works as follows:
 
 * Finally, based on this comparison, the buy and sell orders are made so that your binance portfolio's assets are equally weighted as the top ten cryptocurrencies by market capitalization. However, some of the orders might be below the minimum quantity or the minimum value you can buy. This is mostly due to the important Bitcoin dominance of the market. Therefore, the code will propose you two possibilities: 
 
-1) You can disregard the smaller coins allocation and rebalance the portfolio based on the coins that are buyable.     (Please note that in that case your portfolio will not reflect the ten biggest cryptocurrencies and will disregard the smaller ones)
+1) Buy answering  ```yes``` to the output ```Do you want to proceed with rebalancing? ``` , you will disregard the smaller coins allocation and rebalance the portfolio based on the coins that are buyable. 
+
+(Please note that in that case your portfolio will not reflect the ten biggest cryptocurrencies and will disregard the smaller ones)
 
 2) You can import additional assets on your binance account in order for all the orders to work and your portffolio to reflect the ten biggest cryptocurrencies.
 

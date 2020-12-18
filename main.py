@@ -57,20 +57,6 @@ market_cap['symbol'] = market_cap['symbol'].str.upper() # make the dataframe Upp
 sum_caps = market_cap['market_cap_percentage'].sum() 
 market_cap['market_cap_percentage'] = (market_cap['market_cap_percentage']/sum_caps)
 
-"""
-# COINGECKO: Get market cap data from 
-tickers = client.get_ticker()
-prices = pd.DataFrame.from_dict(tickers)
-prices_table_columns = ['symbol']
-prices = prices.drop(columns=[col for col in prices if col not in prices_table_columns]) #drop all values not needed
-prices.loc[prices['symbol']=='BTCUSDT'] #check for USDT
-
-# COINGECKO: As USDTUSDT does not exist we need to append it
-prices.loc[prices['symbol']=='USDTUSDT'] #check for USDT
-prices = prices.append({'symbol': 'USDTUSDT', "lastPrice": 1}, ignore_index=True)
-prices.loc[prices['symbol']=='USDTUSDT'] #check for USDT again, now we find it
-print(prices)
-"""
 
 # DATA HANDLING -------------------------------------------------------------
 

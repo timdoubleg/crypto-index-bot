@@ -1,24 +1,21 @@
-from pycoingecko import CoinGeckoAPI 
-from binance.client import Client # Import the Binance Client
-from binance.websockets import BinanceSocketManager # Import the Binance Socket Manager
+from pycoingecko import CoinGeckoAPI
+ # Import the Binance Client
+from binance.client import Client 
+# Import the Binance Socket Manager
+from binance.websockets import BinanceSocketManager 
 import pandas as pd
+#The config file is where you store your Binance API keys, make sure to add your own keys.
 import config
 from binance.enums import SIDE_BUY, SIDE_SELL, ORDER_TYPE_MARKET
 
-# Turn off warnings test. The warning arises with pandas. 
+# Turn off warnings test. 
+# The warning arises with pandas. 
 # The code has been checked and the warning is a false positive.
 # default='warn'
 pd.options.mode.chained_assignment = None  
 
-# You can change the Threshold, we need it to account for fees
+# You can change the threshold, we need it to account for fees
 threshold = 0.95
-
-
-# BINANCE ------------------------------------
-# Although fine for tutorial purposes, your API Keys should never be placed directly in the script like below. 
-# You should use a config file (cfg or yaml) to store them and reference when needed.
-API_PUBLIC = 'r7NNoC9Y67xf2mmwSTYM1DwRA03Q3i6YHvKElp9aU6a3LFh0Fhmv0MRPSqBsAt6z'
-API_SECRET = 'CTfkY0bkUpiLfzEgZjL78X93UhN79Tb26Cqp7W27TSVvhod8vZUR3ACr1Q0B86ju'
 
 # Instantiate a Client 
 client = Client(api_key=config.API_PUBLIC, api_secret=config.API_SECRET)

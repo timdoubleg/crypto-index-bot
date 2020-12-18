@@ -10,6 +10,10 @@ from binance.enums import SIDE_BUY, SIDE_SELL, ORDER_TYPE_MARKET
 # default='warn'
 pd.options.mode.chained_assignment = None  
 
+# You can change the Threshold, we need it to account for fees
+threshold = 0.95
+
+
 # BINANCE ------------------------------------
 # Although fine for tutorial purposes, your API Keys should never be placed directly in the script like below. 
 # You should use a config file (cfg or yaml) to store them and reference when needed.
@@ -46,24 +50,35 @@ prices_binance = pd.DataFrame.from_dict(prices_binance)
 # Check for BTCUSDT, we find it
 prices_binance.loc[prices_binance['symbol']=='BTCUSDT'] 
 
+"""
+# Get all open orders
+print(client.get_all_orders(symbol=df_merged['symbol'][i]))
+# If this is empty then we have no open orders
+# Else, if your user balance shows locked values, then you have open orders
+"""
+
+
 # COINGECKO ------------------------------------
 cg = CoinGeckoAPI()
 
-#Get market caps from coingecko
-#Get the data from the api
+# Get market caps from coingecko API
 market_cap = pd.DataFrame.from_dict(cg.get_global())
-#sort by largest to smallest
+# Sort by largest to smallest
 market_cap = market_cap.sort_values(by='market_cap_percentage', ascending=False, na_position='last')
-#reset index
+# Reset index
 market_cap = market_cap.reset_index(drop=False) 
-#only get top 10
+# Only get top 10
 market_cap = market_cap.head(10) 
-#Add columns
+# Add columns
 columns_marketcap = ['index', 'market_cap_percentage'] 
-market_cap = market_cap.drop(columns=[col for col in market_cap if col not in columns_marketcap]) #drop all columns we don't need
-market_cap = market_cap.rename(columns={'index': 'symbol'}) #change name of column
-market_cap['symbol'] = market_cap['symbol'] + 'usdt' # add USDT to string
-market_cap['symbol'] = market_cap['symbol'].str.upper() # make the dataframe Uppercase to compare
+market_cap = market_cap.drop(columns=[col for col in market_cap if col not in columns_marketcap]) 
+# Drop all columns we don't need
+market_cap = market_cap.rename(columns={'index': 'symbol'}) 
+# Change name of column
+market_cap['symbol'] = market_cap['symbol'] + 'usdt' 
+# Add USDT to string
+market_cap['symbol'] = market_cap['symbol'].str.upper() 
+# Make the dataframe Uppercase to compare
 sum_caps = market_cap['market_cap_percentage'].sum() 
 market_cap['market_cap_percentage'] = (market_cap['market_cap_percentage']/sum_caps)
 
@@ -74,7 +89,7 @@ market_cap['market_cap_percentage'] = (market_cap['market_cap_percentage']/sum_c
 prices_binance.loc[prices_binance['symbol']=='USDTUSDT'] # Check for USDT
 prices_binance = prices_binance.append({'symbol': 'USDTUSDT', "price": 1}, ignore_index=True)
 prices_binance.loc[prices_binance['symbol']=='USDTUSDT'] # Check for USDT again, now we find it
-print("List of Prices: \n", prices_binance)
+#print("List of Prices: \n", prices_binance)
 
 # Create columns for later and some more data handling
 coin_balance['portfolio weights'] = 'NA'
@@ -129,7 +144,7 @@ df_merged['price_BTC'] = df_merged['price_BTC']/price_btc
 df_merged['difference'] = df_merged['market_cap_percentage'] - df_merged['portfolio weights']
 
 # Compare market_cap_perc and df
-print("List of Market Caps: \n", market_cap)
+# Print("List of Market Caps: \n", market_cap)
 df_merged = df_merged[(df_merged["free"] != 0) | (df_merged["market_cap_percentage"] != 0)]
 print("\nOverview of Assets and Rebalancing Differences: \n ", df_merged)
 # Reset index
@@ -144,17 +159,6 @@ pf_value_btc = pf_value_usdt/price_btc
 print('\n')
 print('Your USDT portfolio value is: ', pf_value_usdt)
 print('Your BTC portfolio value is: ', pf_value_btc)
-
-# REBALANCING - Printing the Rebalancing process orders -------------------------------------------------------------
-
-# Threshold as we need to account for fees
-threshold = 0.95
-
-"""
-# Get all open orders
-print(client.get_all_orders(symbol=df_merged['symbol'][i]))
-# If this is empty then we have no open orders
-"""
 
 
 
@@ -194,10 +198,10 @@ for i in range(len(df_merged)):
         filters['minNotional'][i] = info['filters'][3]['minNotional']
         filters['stepSize'][i] = info['filters'][2]['stepSize']
 
-print("List of Filters for Binance Trading: \n", filters)
+#print("List of Filters for Binance Trading: \n", filters)
 
 
-# Print the rebalancing process
+# Print the rebalancing process ----------------------------------------------------------------
 print("\n Total USDT:",pf_value_usdt, "\n")
 
 n = 0
@@ -222,7 +226,7 @@ for element in range(len(df_merged)):
             print("\n")
 
 """
-# ERRORS: ---------------
+# ERRORS: use this for manuall debugging ---------------
 
 #checks for the keys in the dictionary
 info = client.get_symbol_info('BTCUSDT') 

@@ -24,7 +24,7 @@ coin_balance = client.get_account()
 
 # Transform balance from dictionary to dataframe
 coin_balance = pd.DataFrame.from_dict(coin_balance['balances'])
-print("User's Balace: \n", coin_balance)
+print("User's Balance: \n", coin_balance)
 
 #Transform values to integers and check if there are some assets in your binance account
 try:
@@ -127,7 +127,7 @@ df_merged['difference'] = df_merged['market_cap_percentage'] - df_merged['portfo
 # Compare market_cap_perc and df
 print("List of Market Caps: \n", market_cap)
 df_merged = df_merged[(df_merged["free"] != 0) | (df_merged["market_cap_percentage"] != 0)]
-print("\nRebalancing: \n ", df_merged)
+print("\nOverview of Assets and Rebalancing Differences: \n ", df_merged)
 # Reset index
 df_merged = df_merged.reset_index(drop=True) 
 
@@ -190,7 +190,7 @@ for i in range(len(df_merged)):
         filters['minNotional'][i] = info['filters'][3]['minNotional']
         filters['stepSize'][i] = info['filters'][2]['stepSize']
 
-print(filters)
+print("List of Filters for Binance Trading: \n", filters)
 
 
 # Print the rebalancing process
@@ -219,7 +219,6 @@ for element in range(len(df_merged)):
 
 """
 # ERRORS: ---------------
-print('\n')
 
 #checks for the keys in the dictionary
 info = client.get_symbol_info('BTCUSDT') 
@@ -244,78 +243,30 @@ print('stepSize: ' + info['filters'][2]['stepSize'])
 
 
 # DATA HANDLING: Transform to numeric -------------------------------
-print('\n')
 
 
 # exchange USDTBTC for the inverse as only BTCUSDT exists as a trading pair
 df_merged['symbol'] = df_merged['symbol'].replace(['USDTBTC'],'BTCUSDT')
 # merge dataframes
 df_merged = pd.merge(df_merged, filters, how ='left', on='symbol')
-#transform columns to numeric
+# transform columns to numeric
 df_merged['difference'] = pd.to_numeric(df_merged['difference'])
 df_merged['portfolio weights'] = pd.to_numeric(df_merged['portfolio weights'])
 df_merged['minQty'] = pd.to_numeric(df_merged['minQty'])
 df_merged['minNotional'] = pd.to_numeric(df_merged['minNotional'])
 df_merged['stepSize'] = pd.to_numeric(df_merged['stepSize'])
-#check for types
+# check for types
 #df_merged.dtypes)
 
-
-# TESTING - MANUAL - BINANCE FILTERS: Test if minQty, minNotional and account for the stepSize -------------------------------
-print('\n')
-
-
-i = 2
-symbol= df_merged['symbol'][i]
-minNotional = df_merged['minNotional'][i]
-stepSize = df_merged['stepSize'][i]
-minQty = df_merged['minQty'][i]
-price = df_merged['price_USDT'][i]
-difference = df_merged['difference'][i]
-
-# how many do we buy?
-quantity = abs(pf_value_usdt * difference * threshold)
-
-# round the decimals
-decimals = abs(int(f'{stepSize:e}'.split('e')[-1]))
-quantity = round(quantity, decimals)
-
-# run the tests
-if quantity < minQty:
-    print(symbol, quantity, 'is smaller than minQty: ', minQty)
-if quantity*price < minNotional:
-    print(symbol, quantity*price, 'is smaller than minNotional: ', minNotional)
-else:
-    print(symbol, ' passed all tests')
-
-# Test order BUY
-try: 
-    if df_merged['difference'][i] > 0:
-        order = client.create_test_order(
-                symbol= symbol,
-                side=SIDE_BUY,
-                type=ORDER_TYPE_MARKET,
-                quantity = quantity
-                )
-
-        print(df_merged['symbol'][i], ': BUY order: ', order)
-
-    # Test order SELL
-    elif df_merged['difference'][i] < 0:
-        order = client.create_test_order(
-                symbol= symbol,
-                side=SIDE_SELL,
-                type=ORDER_TYPE_MARKET,
-                quantity = quantity
-                )
-        print(df_merged['symbol'][i], ': SELL order: ', order)
-except:
-    print('there is an error with', symbol, 'please check it manually')
+# drop the row with USDT as we won't need it for testing/executing orders
+index = df_merged.query('symbol == "USDTUSDT"').index[0]
+df_merged = df_merged.drop(index=index)
+df_merged = df_merged.reset_index(drop=True) 
 
 
 
 # TESTING - FOR LOOP - BINANCE FILTERS: Test if minQty, minNotional and account for the stepSize -------------------------------
-print('\n')
+print('\n', 'Overview of Binance Filter Tests')
 
 for i in range(len(df_merged)):
     try: 
@@ -341,7 +292,7 @@ for i in range(len(df_merged)):
         else:
             print(symbol, ' passed all tests')
     except:
-        print('error, something else went wrong')
+        print(symbol, 'error, something else went wrong')
 
 
 """
@@ -375,7 +326,6 @@ print('\n')
 # for i = 3 we have a scientific output for stepSize
 
 print('Overview of outcomes when testing orders:')
-print('\n')
 for i in range(len(df_merged)):
 
     try:
@@ -421,3 +371,5 @@ for i in range(len(df_merged)):
         else:
             print(df_merged['symbol'][i] +': another error occured, please check manually!')
 
+
+# PLACING ORDERS: For Loop for Rebalancing (Work in Progress) -----------------------------------------

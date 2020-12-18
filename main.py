@@ -232,13 +232,8 @@ print(df_merged.dtypes)
 
 
 
-# MANUAL TESTING OF BINANCE FILTERS: Test if minQty, minNotional and account for the stepSize -------------------------------
+# TESTING - MANUAL - BINANCE FILTERS: Test if minQty, minNotional and account for the stepSize -------------------------------
 print('\n')
-
-# merge 
-df_merged = pd.merge(df_merged, prices_binance, on='symbol', how='left')
-df_merged = df_merged.rename(columns={'price_x': 'price_USDT', 'price_y': 'price_BTC'}) #change name of column
-df_merged['price_BTC'] = pd.to_numeric(df_merged['price_BTC'])
 
 
 i = 2
@@ -290,7 +285,7 @@ except:
 
 
 
-# FOR LOOP: Test if minQty, minNotional and account for the stepSize -------------------------------
+# TESTING - FOR LOOP - BINANCE FILTERS: Test if minQty, minNotional and account for the stepSize -------------------------------
 print('\n')
 
 for i in range(len(df_merged)):

@@ -132,8 +132,11 @@ df_merged = df_merged.reset_index(drop=True)
 print("\nOverview of Assets and Rebalancing Differences: \n ", df_merged)
 
 # Print portfolio values
-print('Your USDT portfolio value is: ', pf_value_usdt)
+print('\n Your USDT portfolio value is: ', pf_value_usdt)
 print('Your BTC portfolio value is: ', pf_value_btc)
+
+# sort values after highest portfolio weights
+df_merged = df_merged.sort_values(by='portfolio weights', ascending=False, na_position='last') 
 
 
 # BINANCE TRADING FILTERS - Extracting the minQty,stepSize, and minNotional to avoid errors: ---------------
@@ -219,7 +222,8 @@ df_merged['stepSize'] = pd.to_numeric(df_merged['stepSize'])
 # Check for types
 # df_merged.dtypes)
 
-# Drop the row with USDT as we won't need it for testing/executing orders
+# Drop the row with USDT as we won't need it for testing/executing orders. 
+# There exists no trading pair "USDTUSDT"
 index = df_merged.query('symbol == "USDTUSDT"').index[0]
 df_merged = df_merged.drop(index=index)
 df_merged = df_merged.reset_index(drop=True) 

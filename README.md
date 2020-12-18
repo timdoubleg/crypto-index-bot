@@ -40,7 +40,7 @@ In order to do so, the code works as follows:
 
 ## Assumption: 
 The code assumes that you already have some cryptocurrencies on your binance account.
-The code rebalances 95% of your assets in order to keep 10% for any transaction costs.
+The code rebalances 95% of your assets in order to keep 5% for any transaction costs.
 
 
 # Installation

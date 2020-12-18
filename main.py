@@ -139,6 +139,7 @@ print('Your BTC portfolio value is: ', pf_value_btc)
 df_merged = df_merged.sort_values(by='portfolio weights', ascending=False, na_position='last') 
 
 
+
 # BINANCE TRADING FILTERS - Extracting the minQty,stepSize, and minNotional to avoid errors: ---------------
 print('\n')
 
@@ -228,6 +229,7 @@ index = df_merged.query('symbol == "USDTUSDT"').index[0]
 df_merged = df_merged.drop(index=index)
 df_merged = df_merged.reset_index(drop=True) 
 
+
 # Print the rebalancing process ----------------------------------------------------------------
 print("\n Total USDT:",pf_value_usdt, "\n")
 
@@ -273,11 +275,8 @@ for i in range(len(df_merged)):
 
 
 # PLACING TEST ORDERS: For Loop for Rebalancing (Work in Progress) -----------------------------------------
-print('\n')
 
-# for i = 3 we have a scientific output for stepSize
-
-print('Overview of outcomes when testing orders:')
+print('\n Overview of outcomes when testing orders:')
 for i in range(len(df_merged)):
 
     try:
@@ -322,6 +321,7 @@ for i in range(len(df_merged)):
             print(symbol,  ':', round(quantity*price, decimals), 'is smaller than minNotional: ', minNotional)
         else:
             print(df_merged['symbol'][i] +': another error occured, please check manually!')
+
 
 
 # PLACING ORDERS: For Loop for Rebalancing -----------------------------------------

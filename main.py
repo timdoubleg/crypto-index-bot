@@ -7,7 +7,7 @@ import config
 import binance.enums
 
 # Turn off warnings test. The warning arrises with pandas. 
-# The code has been checked and it is a false positive.
+# The code has been checked and the warning is a false positive.
 # default='warn'
 pd.options.mode.chained_assignment = None  
 
@@ -33,7 +33,7 @@ try:
     coin_balance['locked'] = pd.to_numeric(coin_balance['locked'])
     coin_balance.dtypes
 except:
-    print("You do not have any assets in your binance account. Please deposit some coins and run the code.")
+    print("You do not have any assets in your binance account. Please deposit some coins in your account and run the code.")
     exit()
 
 # BINANCE: Get prices from Binance

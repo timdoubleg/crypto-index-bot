@@ -213,7 +213,7 @@ df_merged['minQty'] = pd.to_numeric(df_merged['minQty'])
 df_merged['minNotional'] = pd.to_numeric(df_merged['minNotional'])
 df_merged['stepSize'] = pd.to_numeric(df_merged['stepSize'])
 #check for types
-print(df_merged.dtypes)
+#df_merged.dtypes)
 
 
 

@@ -1,10 +1,10 @@
 from pycoingecko import CoinGeckoAPI
- # Import the Binance Client
+# Import the Binance Client
 from binance.client import Client 
 # Import the Binance Socket Manager
 from binance.websockets import BinanceSocketManager 
 import pandas as pd
-#The config file is where you store your Binance API keys, make sure to add your own keys.
+# The config file is where you store your Binance API keys, make sure to add your own keys.
 import config
 from binance.enums import SIDE_BUY, SIDE_SELL, ORDER_TYPE_MARKET
 
@@ -27,7 +27,7 @@ coin_balance = client.get_account()
 coin_balance = pd.DataFrame.from_dict(coin_balance['balances'])
 
 
-#Transform values to integers and check if there are some assets in your binance account
+# Transform values to integers and check if there are some assets in your binance account
 try:
     coin_balance['free'] = pd.to_numeric(coin_balance['free'])
     coin_balance['locked'] = pd.to_numeric(coin_balance['locked'])
@@ -37,7 +37,7 @@ except:
     exit()
 
 # Sort values after highest balance
-coin_balance = coin_balance.sort_values(by='free', ascending=False, na_position='last')
+coin_balance = coin_balance.sort_values(by = 'free', ascending = False, na_position = 'last')
 print("User's Balance: \n", coin_balance)
 
 # BINANCE: Get prices from Binance
@@ -45,7 +45,7 @@ prices_binance = client.get_all_tickers()
 # Converts dictionary to dataframe
 prices_binance = pd.DataFrame.from_dict(prices_binance)
 # Check for BTCUSDT, we find it
-prices_binance.loc[prices_binance['symbol']=='BTCUSDT'] 
+prices_binance.loc[prices_binance['symbol'] == 'BTCUSDT'] 
 
 """
 # Get all open orders
@@ -61,16 +61,16 @@ cg = CoinGeckoAPI()
 # Get market caps from coingecko API
 market_cap = pd.DataFrame.from_dict(cg.get_global())
 # Sort by largest to smallest
-market_cap = market_cap.sort_values(by='market_cap_percentage', ascending=False, na_position='last')
+market_cap = market_cap.sort_values(by = 'market_cap_percentage', ascending = False, na_position = 'last')
 # Reset index
-market_cap = market_cap.reset_index(drop=False) 
+market_cap = market_cap.reset_index(drop = False) 
 # Only get top 10
 market_cap = market_cap.head(10) 
 # Add columns
 columns_marketcap = ['index', 'market_cap_percentage'] 
-market_cap = market_cap.drop(columns=[col for col in market_cap if col not in columns_marketcap]) 
+market_cap = market_cap.drop(columns = [col for col in market_cap if col not in columns_marketcap]) 
 # Drop all columns we don't need
-market_cap = market_cap.rename(columns={'index': 'symbol'}) 
+market_cap = market_cap.rename(columns = {'index': 'symbol'}) 
 # Change name of column
 market_cap['symbol'] = market_cap['symbol'] + 'usdt' 
 # Add USDT to string
@@ -128,8 +128,8 @@ df_merged['market_cap_percentage'] = df_merged['market_cap_percentage'].fillna(0
 # Merge binance prices with our main df
 df_merged = pd.merge(df_merged, prices_binance, on='symbol', how='left')
 
-# calculate prices_USDT and prices_BTC
-# change name of column
+# Calculate prices_USDT and prices_BTC
+# Change name of column
 df_merged = df_merged.rename(columns={'price_x': 'price_USDT', 'price_y': 'price_BTC'}) 
 index = df_merged.query('symbol == "BTCUSDT"').index
 price_btc = df_merged['price_BTC'][index][0]
@@ -172,24 +172,24 @@ for i in range(len(df_merged)):
     symbol = df_merged['symbol'][i]
 
     if df_merged['symbol'][i] == 'USDTUSDT':
-        #leave USDTBTC as it is
+        # Leave USDTBTC as it is
         filters['symbol'][i] = symbol
     elif df_merged['symbol'][i] == "USDTBTC":
-        #change USDTBTC to BTCUSDT
+        # Change USDTBTC to BTCUSDT
         symbol = 'BTCUSDT'
-        # get filter values 
+        # Get filter values 
         info = client.get_symbol_info(symbol) 
 
-        # extract needed files
+        # Extract needed files
         filters['symbol'][i] = symbol
         filters['minQty'][i] = info['filters'][2]['minQty']
         filters['minNotional'][i] = info['filters'][3]['minNotional']
         filters['stepSize'][i] = info['filters'][2]['stepSize']
     else:
-        # get filter values 
+        # Get filter values 
         info = client.get_symbol_info(symbol) 
 
-        # extract needed files 
+        # Extract needed files 
         filters['symbol'][i] = symbol
         filters['minQty'][i] = info['filters'][2]['minQty']
         filters['minNotional'][i] = info['filters'][3]['minNotional']
@@ -201,13 +201,11 @@ for i in range(len(df_merged)):
 # Print the rebalancing process ----------------------------------------------------------------
 print("\n Total USDT:",pf_value_usdt, "\n")
 
+# For Loop that prints which orders are executed and which not
 n = 0
 for element in range(len(df_merged)):
     n = n + 1
     coin_value = df_merged["difference"][element] * pf_value_usdt * threshold
-
-    #if coin_value < filters["minNotional"][element]:
-     #   print("Your transaction must be at least ", filters["minNotional"][element], "USD in order to be executed")
     
     if df_merged["difference"][element] > 0:
         print(n," BUY:", round(coin_value/df_merged["price_USDT"][element], 3), df_merged["symbol"][element],  "            Worth:" ,round(coin_value, 3), "USDT")
@@ -223,9 +221,9 @@ for element in range(len(df_merged)):
             print("\n")
 
 """
-# ERRORS: use this for manuall debugging ---------------
+# ERRORS: use this for manual debugging ---------------
 
-#checks for the keys in the dictionary
+# Checks for the keys in the dictionary
 info = client.get_symbol_info('BTCUSDT') 
 for key in info:
     print(key, '->', info[key])
@@ -243,27 +241,26 @@ print('Minimum Notional: ' + info['filters'][3]['minNotional'])
 # 3. Error "LOT SIZE": This appears when either min qt, max qt, stepSize, or min notional is violated
 # Get stepSize
 print('stepSize: ' + info['filters'][2]['stepSize'])
-
 """
 
 
 # DATA HANDLING: Transform to numeric -------------------------------
 
 
-# exchange USDTBTC for the inverse as only BTCUSDT exists as a trading pair
+# Exchange USDTBTC for the inverse as only BTCUSDT exists as a trading pair
 df_merged['symbol'] = df_merged['symbol'].replace(['USDTBTC'],'BTCUSDT')
-# merge dataframes
+# Merge dataframes
 df_merged = pd.merge(df_merged, filters, how ='left', on='symbol')
-# transform columns to numeric
+# Transform columns to numeric
 df_merged['difference'] = pd.to_numeric(df_merged['difference'])
 df_merged['portfolio weights'] = pd.to_numeric(df_merged['portfolio weights'])
 df_merged['minQty'] = pd.to_numeric(df_merged['minQty'])
 df_merged['minNotional'] = pd.to_numeric(df_merged['minNotional'])
 df_merged['stepSize'] = pd.to_numeric(df_merged['stepSize'])
-# check for types
-#df_merged.dtypes)
+# Check for types
+# df_merged.dtypes)
 
-# drop the row with USDT as we won't need it for testing/executing orders
+# Drop the row with USDT as we won't need it for testing/executing orders
 index = df_merged.query('symbol == "USDTUSDT"').index[0]
 df_merged = df_merged.drop(index=index)
 df_merged = df_merged.reset_index(drop=True) 
@@ -282,17 +279,17 @@ for i in range(len(df_merged)):
         price = df_merged['price_USDT'][i]
         difference = df_merged['difference'][i]
 
-        # how many do we buy?
+        # How many do we buy?
         quantity = abs((pf_value_usdt * threshold * difference)/price)
 
-        # round the decimals
+        # Round the decimals
         decimals = abs(int(f'{stepSize:e}'.split('e')[-1]))
         quantity = round(quantity, decimals)
 
-        # run the tests
+        # Run the tests
         if quantity < minQty:
             print(symbol, quantity, 'is smaller than minQty: ', minQty)
-        if quantity*price < minNotional:
+        if quantity * price < minNotional:
             print(symbol, round(quantity*price, decimals), 'is smaller than minNotional: ', minNotional)
         else:
             print(symbol, ' passed all tests')
@@ -309,7 +306,7 @@ print('Overview of outcomes when testing orders:')
 for i in range(len(df_merged)):
 
     try:
-        symbol= df_merged['symbol'][i]
+        symbol = df_merged['symbol'][i]
         minNotional = df_merged['minNotional'][i]
         stepSize = df_merged['stepSize'][i]
         minQty = df_merged['minQty'][i]
@@ -326,9 +323,9 @@ for i in range(len(df_merged)):
         # Sell order
         if df_merged['difference'][i] < 0:
             order = client.create_test_order(
-                symbol= symbol,
-                side=SIDE_SELL,
-                type=ORDER_TYPE_MARKET,
+                symbol = symbol,
+                side = SIDE_SELL,
+                type = ORDER_TYPE_MARKET,
                 quantity = quantity
                 )
             print(df_merged['symbol'][i], ': succesful sell order: ', order)
@@ -336,9 +333,9 @@ for i in range(len(df_merged)):
         # Buy order
         elif df_merged['difference'][i] > 0:
             order = client.create_test_order(
-                symbol= symbol,
-                side=SIDE_BUY,
-                type=ORDER_TYPE_MARKET,
+                symbol = symbol,
+                side = SIDE_BUY,
+                type = ORDER_TYPE_MARKET,
                 quantity = quantity
                 )
             print(df_merged['symbol'][i], ': succesful buy order: ', order)
@@ -364,7 +361,7 @@ while True:
             print('\n')
             for i in range(len(df_merged)):
                 try:
-                    # set up the values
+                    # Set up the values
                     symbol= df_merged['symbol'][i]
                     minNotional = df_merged['minNotional'][i]
                     stepSize = df_merged['stepSize'][i]
@@ -372,17 +369,17 @@ while True:
                     price = df_merged['price_USDT'][i]
                     difference = df_merged['difference'][i]
 
-                    # how many do we buy?
+                    # How many do we buy?
                     quantity = abs((pf_value_usdt * threshold * difference)/price)
 
-                    # round the decimals
+                    # Round the decimals
                     decimals = abs(int(f'{stepSize:e}'.split('e')[-1]))
                     quantity = round(quantity, decimals)
 
                     # Sell order
                     if df_merged['difference'][i] < 0:
                         order = client.order_market_sell(
-                            symbol= symbol,
+                            symbol = symbol,
                             quantity = quantity
                             )
                         print(df_merged['symbol'][i], ': succesful sell order: ', order)
@@ -404,7 +401,7 @@ while True:
                         print(df_merged['symbol'][i] +': another error occured, please check manually!')          
             break
 
-        # if answer is no
+        # If answer is no
         elif answer == 'n':
             print('\n Will not rebalance')
             break

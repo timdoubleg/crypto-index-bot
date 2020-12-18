@@ -17,7 +17,7 @@ API_PUBLIC = 'r7NNoC9Y67xf2mmwSTYM1DwRA03Q3i6YHvKElp9aU6a3LFh0Fhmv0MRPSqBsAt6z'
 API_SECRET = 'CTfkY0bkUpiLfzEgZjL78X93UhN79Tb26Cqp7W27TSVvhod8vZUR3ACr1Q0B86ju'
 
 # Instantiate a Client 
-client = Client(api_key=condig.API_PUBLIC, api_secret=config.API_SECRET)
+client = Client(api_key=config.API_PUBLIC, api_secret=config.API_SECRET)
 
 # Gets data from account balance as dictionary
 coin_balance = client.get_account()

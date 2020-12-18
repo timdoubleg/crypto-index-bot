@@ -193,8 +193,12 @@ for i in range(len(df_merged)):
         # Accounting for filters
         if round(coin_value, 3) < float(filters["minNotional"][i]): 
             print("Your transaction must be at least", float(filters["minNotional"][i]), "USDT in order to be executed \n")
+        #elif round(coin_value/df_merged["price_USDT"][i], 3) < float(filters["minQty"][i]):
+        #    print(df_merged["symbol"][i], ':', round(coin_value/df_merged["price_USDT"][i], 3), 'is smaller than minimum quantity: ', float(filters["minQty"][i])
         else:
             print("\n")
+        
+
 
     # Information for Sell Order
     else:   

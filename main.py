@@ -6,8 +6,6 @@ import pandas as pd
 # Turn off warnings test 
 pd.options.mode.chained_assignment = None  # default='warn'
 
-
-
 # BINANCE ------------------------------------
 # Although fine for tutorial purposes, your API Keys should never be placed directly in the script like below. 
 # You should use a config file (cfg or yaml) to store them and reference when needed.
@@ -39,6 +37,8 @@ prices_binance = pd.DataFrame.from_dict(prices_binance) # Converts dictionary to
 prices_binance.loc[prices_binance['symbol']=='BTCUSDT'] # Check for BTCUSDT, we find it
 
 # COINGECKO ------------------------------------
+cg = CoinGeckoAPI()
+
 # Get market caps from coingecko
 market_cap = pd.DataFrame.from_dict(cg.get_global()) #get the data from the api
 market_cap = market_cap.sort_values(by='market_cap_percentage', ascending=False, na_position='last') #sort by largest to smallest
@@ -133,6 +133,7 @@ df_merged['symbol'] = df_merged['symbol'] + 'BTC'
 # calculate total pf values
 index = df_merged.query('symbol == "BTCUSDT"').index
 price_btc = df_merged['price'][index][0]
+pf_value_usdt = df_merged["USDT"].sum()
 # Calculate the total portfolio value in btc
 pf_value_btc = pf_value_usdt/price_btc
 
@@ -154,7 +155,6 @@ print(client.get_all_orders(symbol=df_merged['symbol'][i]))
 """
 
 # Print the rebalancing process
-pf_value_usdt = df_merged["USDT"].sum()
 print("\n Total USD:",pf_value_usdt, "\n")
 
 n = 0

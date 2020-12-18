@@ -1,11 +1,11 @@
 # PWACL
-*Building an automated TOP 10- index for your binance account in Python*
+**Building an automated TOP 10- index for your binance account in Python**
 
-*Date*: 04.11.2020 - 18.12.2020
+**Date**: 04.11.2020 - 18.12.2020
 
-*Technology*: Python 3
+**Technology**: Python 3
 
-*Authors*: Tim Graf, Marvin Scherer, Henri de Montpellier
+**Authors**: Tim Graf, Marvin Scherer, Henri de Montpellier
 
 ## Table of contents
 * [Description](#Description)

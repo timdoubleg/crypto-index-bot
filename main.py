@@ -362,7 +362,7 @@ for i in range(len(df_merged)):
                 type=ORDER_TYPE_MARKET,
                 quantity = quantity
                 )
-            print(df_merged['symbol'][i], ': sell order: ', order)
+            print(df_merged['symbol'][i], ': succesful sell order: ', order)
 
         # Buy order
         elif df_merged['difference'][i] > 0:
@@ -372,12 +372,13 @@ for i in range(len(df_merged)):
                 type=ORDER_TYPE_MARKET,
                 quantity = quantity
                 )
-            print(df_merged['symbol'][i], ': buy order: ', order)
+            print(df_merged['symbol'][i], ': succesful buy order: ', order)
 
     except:  
         if quantity < minQty:
-            print(symbol, quantity, 'is smaller than minQty: ', minQty)
+            print(symbol, ' :', quantity, 'is smaller than minQty: ', minQty)
         if quantity*price < minNotional:
-            print(symbol, round(quantity*price, decimals), 'is smaller than minNotional: ', minNotional)
-        print(df_merged['symbol'][i] +': error did not work')
+            print(symbol,  ' :', round(quantity*price, decimals), 'is smaller than minNotional: ', minNotional)
+        else:
+            print(df_merged['symbol'][i] +': another error occured, please check manually!')
 

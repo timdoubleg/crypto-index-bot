@@ -179,9 +179,8 @@ for i in range(len(df_merged)):
 #print("List of Filters for Binance Trading: \n", filters)
 
 
-# Print the rebalancing process ----------------------------------------------------------------
-print("\n Total USDT:",pf_value_usdt, "\n")
 
+<<<<<<< Updated upstream
 # For Loop that prints important information on executing the orders
 n = 0
 for i in range(len(df_merged)):
@@ -208,6 +207,8 @@ for i in range(len(df_merged)):
             print("Your transaction must be at least", float(filters["minNotional"][i]), "USD in order to be executed \n")
         else:
             print("\n")
+=======
+>>>>>>> Stashed changes
 
 """
 # ERRORS: use this for manual debugging ---------------------------------------
@@ -234,7 +235,6 @@ print('stepSize: ' + info['filters'][2]['stepSize'])
 # 4. Error "LOT SIZE": This appears when either min qt, max qt, stepSize, or min notional is violated
 """
 
-
 # DATA HANDLING: Transform to numeric -------------------------------
 
 # Exchange USDTBTC for the inverse as only BTCUSDT exists as a trading pair
@@ -254,6 +254,58 @@ df_merged['stepSize'] = pd.to_numeric(df_merged['stepSize'])
 index = df_merged.query('symbol == "USDTUSDT"').index[0]
 df_merged = df_merged.drop(index=index)
 df_merged = df_merged.reset_index(drop=True) 
+
+# Print the rebalancing process VERSION TIM ----------------------------------------------------------------
+print("\n Total USDT:",pf_value_usdt, "\n")
+
+# For Loop that prints important information on executing the orders
+
+        if quantity < minQty:
+            print(symbol, ':', quantity, 'is smaller than minQty: ', minQty)
+        if quantity*price < minNotional:
+            print(symbol,  ':', round(quantity*price, decimals), 'is smaller than minNotional: ', minNotional)
+        else:
+            print(df_merged['symbol'][i] +': another error occured, please check manually!')
+
+
+for i in range(len(df_merged)):
+
+    symbol = df_merged['symbol'][i]
+    minNotional = df_merged['minNotional'][i]
+    stepSize = df_merged['stepSize'][i]
+    minQty = df_merged['minQty'][i]
+    price = df_merged['price_USDT'][i]
+    difference = df_merged['difference'][i]
+
+    coin_value = df_merged["difference"][i] * pf_value_usdt * threshold
+
+    # how many do we buy?
+    quantity = abs((pf_value_usdt * threshold * difference)/price)
+
+    # round the decimals
+    decimals = abs(int(f'{stepSize:e}'.split('e')[-1]))
+    quantity = round(quantity, decimals)
+    
+    # Information for Buy Order
+    if df_merged["difference"][i] > 0:
+        print(n," BUY:", round(coin_value/df_merged["price_USDT"][i], 3), df_merged["symbol"][i],  "            Worth:" ,round(coin_value, 3), "USDT")
+        # Accounting for filters
+        if quantity < minQty:
+            print(symbol, ':', quantity, 'is smaller than minQty: ', minQty)
+        if quantity*price < minNotional: 
+            print("Your transaction must be at least", float(filters["minNotional"][i]), "USDT in order to be executed \n")
+        else:
+            print("\n")
+
+    # Information for Sell Order
+    else:   
+        print(n," SELL:", round(abs(coin_value/df_merged["price_USDT"][i]), 3), df_merged["symbol"][i],  "            Worth:" ,abs(round(coin_value, 3)), "USDT")
+        if quantity < minQty:
+            print(symbol, ':', quantity, 'is smaller than minQty: ', minQty)
+        if quantity*price < minNotional: 
+            print("Your transaction must be at least", float(filters["minNotional"][i]), "USD in order to be executed \n")
+        else:
+            print("\n")
 
 
 # PLACING TEST ORDERS: For Loop for Rebalancing (Work in Progress) -----------------------------------------

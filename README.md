@@ -25,20 +25,7 @@ This is the official code for a project in the course _"Programming with Advance
 
 In order to do so, the code works as follows:
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 1) The project retrieves your asset's allocation data from your binance account.
-=======
-<<<<<<< Updated upstream
-=======
->>>>>>> f8944c66eba82410189d56fb3483381e782d0d89
-1) the project retrieves your asset's allocation data from your binance account.
-* Firstly, the project retrieves your asset's allocation data from your binance account. 
-<<<<<<< HEAD
->>>>>>> Stashed changes
->>>>>>> 0427e482ca489de76b4b309058b0b843b5ba62b8
-=======
->>>>>>> f8944c66eba82410189d56fb3483381e782d0d89
 
 2) The project retrieves the cryptocurrencies' prices from binance and the market capitalization data from https://www.coingecko.com.
 
@@ -48,20 +35,7 @@ In order to do so, the code works as follows:
     
     ![alt text](/img.png)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 5) Based on this comparison, the buy and sell orders are made so that your binance portfolio's assets are equally weighted as the top ten cryptocurrencies by market capitalization. However, some of the orders might be below the minimum quantity or the minimum value you can buy. This is mostly due to the important Bitcoin dominance of the market. Therefore, the code will propose you two possibilities ```Do you want to proceed with rebalancing? y/n``` 
-=======
-<<<<<<< Updated upstream
-=======
->>>>>>> f8944c66eba82410189d56fb3483381e782d0d89
-5) based on this comparison, the buy and sell orders are made so that your binance portfolio's assets are equally weighted as the top ten cryptocurrencies by market capitalization. However, some of the orders might be below the minimum quantity or the minimum value you can buy. This is mostly due to the important Bitcoin dominance of the market. Therefore, the code will propose you two possibilities ```Do you want to proceed with rebalancing? y/n``` 
-* Finally, based on this comparison, the buy and sell orders are made so that your binance portfolio's assets are equally weighted as the top ten cryptocurrencies by market capitalization. However, some of the orders might be below the minimum notional value or the minimum quantity you can buy. This is mostly due to the Bitcoin dominance of the market. Therefore, the code will propose you two possibilities ```Do you want to proceed with rebalancing? y/n``` 
-<<<<<<< HEAD
->>>>>>> Stashed changes
->>>>>>> 0427e482ca489de76b4b309058b0b843b5ba62b8
-=======
->>>>>>> f8944c66eba82410189d56fb3483381e782d0d89
 
     1)  ```y``` will disregard the smaller coins allocation and rebalance the portfolio based on the coins that are buyable. (Please note that in that case your portfolio will not reflect the ten biggest cryptocurrencies and will disregard the smaller ones)
 

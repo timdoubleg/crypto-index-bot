@@ -20,20 +20,13 @@
 
 # Description:
 
-<<<<<<< Updated upstream
 This is the official code for a project in the course _"Programming with Advanced Computer Languages"_ at the University of St. Gallen (HSG). The code rebalances your assets on your binance account in order to reflect a crypto index. The index is based on the ten biggest cryptoccurencies by market capitalization. Therefore, running the code will rebalance your binance portfolio so that it mimics the corresponding weights of the top ten cryptocurrencies' market capitalization.
-=======
-This is the official code for a project in the course _"Programming with Advanced Computer Languages"_ at the University of St. Gallen. The codes aim at rebalancing your assets on your binance account in order to reflect a crypto index. The index is based on the ten biggest cryptoccurencies by market capitalization. Therefore, running the code will rebalance your binance portfolio so that it mimics the corresponding weights of the top ten cryptocurrencies' market capitalization.
->>>>>>> Stashed changes
 
 
 In order to do so, the code works as follows:
 
-<<<<<<< Updated upstream
 1) the project retrieves your asset's allocation data from your binance account.
-=======
 * Firstly, the project retrieves your asset's allocation data from your binance account. 
->>>>>>> Stashed changes
 
 2) the project retrieves the cryptocurrencies' prices from binance and the market capitalization data from https://www.coingecko.com.
 

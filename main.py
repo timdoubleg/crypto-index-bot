@@ -2,9 +2,8 @@ from pycoingecko import CoinGeckoAPI
 from binance.client import Client # Import the Binance Client
 from binance.websockets import BinanceSocketManager # Import the Binance Socket Manager
 import pandas as pd
-import decimal
+import decimal 
 import binance.enums
-
 
 # Turn off warnings test 
 pd.options.mode.chained_assignment = None  # default='warn'
@@ -38,8 +37,6 @@ except:
 prices_binance = client.get_all_tickers() 
 prices_binance = pd.DataFrame.from_dict(prices_binance) # Converts dictionary to dataframe
 prices_binance.loc[prices_binance['symbol']=='BTCUSDT'] # Check for BTCUSDT, we find it
-
-
 
 # COINGECKO ------------------------------------
 cg = CoinGeckoAPI()
@@ -112,10 +109,10 @@ for i in range(len(df)):
 df_table_columns = ['symbol', 'price', 'free', 'portfolio weights', 'USDT']
 df = df.drop(columns=[col for col in df if col not in df_table_columns])
 
-# Merge market cap with our main df 
+# Merge both dataframes
 df_merged = pd.merge(df, market_cap, how ='left', on='symbol')
 # Sort by largest to smallest
-df_merged = df_merged.sort_values(by='portfolio weights', ascending=False, na_position='last') 
+df_merged = df_merged.sort_values(by='market_cap_percentage', ascending=False, na_position='last') 
 df_merged['market_cap_percentage'] = df_merged['market_cap_percentage'].fillna(0)
 
 # Merge binance prices with our main df
@@ -138,6 +135,7 @@ df_merged = df_merged[(df_merged["free"] != 0) | (df_merged["market_cap_percenta
 print("\nRebalancing: \n ", df_merged)
 # Reset index
 df_merged = df_merged.reset_index(drop=True) 
+
 
 """
 # Replace USDT by BTC
@@ -246,25 +244,32 @@ print('stepSize: ' + info['filters'][2]['stepSize'])
 """
 
 
-# DATA HANDLING: Transform to numeric -------------------------------
+# Transform to numeric -------------------------------
 print('\n')
+
 
 # exchange USDTBTC for the inverse as only BTCUSDT exists as a trading pair
 df_merged['symbol'] = df_merged['symbol'].replace(['USDTBTC'],'BTCUSDT')
 # merge dataframes
 df_merged = pd.merge(df_merged, filters, how ='left', on='symbol')
-# transform columns to numeric
+#transform columns to numeric
 df_merged['difference'] = pd.to_numeric(df_merged['difference'])
 df_merged['portfolio weights'] = pd.to_numeric(df_merged['portfolio weights'])
 df_merged['minQty'] = pd.to_numeric(df_merged['minQty'])
 df_merged['minNotional'] = pd.to_numeric(df_merged['minNotional'])
 df_merged['stepSize'] = pd.to_numeric(df_merged['stepSize'])
-# check for types
-#print(df_merged.dtypes)
+#check for types
+print(df_merged.dtypes)
+
 
 
 # MANUAL: Test if minQty, minNotional and account for the stepSize -------------------------------
 print('\n')
+
+# merge 
+df_merged = pd.merge(df_merged, prices_binance, on='symbol', how='left')
+df_merged = df_merged.rename(columns={'price_x': 'price_USDT', 'price_y': 'price_BTC'}) #change name of column
+df_merged['price_BTC'] = pd.to_numeric(df_merged['price_BTC'])
 
 
 i = 2
@@ -275,12 +280,15 @@ minQty = df_merged['minQty'][i]
 price = df_merged['price_USDT'][i]
 difference = df_merged['difference'][i]
 
+
 # how many do we buy?
 quantity = abs(pf_value_usdt * difference * threshold)
+
 
 # round the decimals
 decimals = abs(int(f'{stepSize:e}'.split('e')[-1]))
 quantity = round(quantity, decimals)
+
 
 # run the tests
 if quantity < minQty:
@@ -289,6 +297,7 @@ if quantity*price < minNotional:
     print(symbol, quantity*price, 'is smaller than minNotional: ', minNotional)
 else:
     print(symbol, ' passed all tests')
+
 
 # Test order BUY
 try: 
@@ -301,6 +310,7 @@ try:
                 )
 
         print(df_merged['symbol'][i], ': BUY order: ', order)
+
 
     # Test order SELL
     elif df_merged['difference'][i] < 0:

@@ -5,8 +5,6 @@ import pandas as pd
 from requests import Request, Session
 from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 import json
-import decimal
-import binance.enums
 
 # Turn off warnings test 
 pd.options.mode.chained_assignment = None  # default='warn'
@@ -191,6 +189,8 @@ df_merged['symbol'] = df_merged['symbol'] + 'BTC'
 
 # Testing orders -------------------------------------------------------------
 
+from binance.enums import *
+
 # Threshold as we need to account for fees
 threshold = 0.95
 
@@ -303,6 +303,8 @@ df_merged = pd.merge(df_merged, prices_binance, on='symbol', how='left')
 df_merged = df_merged.rename(columns={'price_x': 'price_USDT', 'price_y': 'price_BTC'}) #change name of column
 df_merged['price_BTC'] = pd.to_numeric(df_merged['price_BTC'])
 
+
+from decimal import *
 
 i = 2
 symbol= df_merged['symbol'][i]

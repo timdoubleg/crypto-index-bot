@@ -161,18 +161,6 @@ print(client.get_all_orders(symbol=df_merged['symbol'][i]))
 # If this is empty then we have no open orders
 """
 
-# Print the rebalancing process
-print("\n Total USD:",pf_value_usdt, "\n")
-
-n = 0
-for element in range(len(df_merged)):
-    n = n + 1
-    if df_merged["difference"][element] > 0:
-        coin_value = df_merged["difference"][element] * pf_value_usdt
-        print(n," Buy " , round(coin_value, 3), "USD worth of" ,df_merged["symbol"][element])
-    else:
-        coin_value = df_merged["difference"][element] * pf_value_usdt
-        print(n," Sell " , round(abs(coin_value), 3), "USD worth of" ,df_merged["symbol"][element])
 
 
 # Extracting the minQty,stepSize, and minNotional to avoid errors: ---------------
@@ -213,6 +201,30 @@ for i in range(len(df_merged)):
 
 print(filters)
 
+
+# Print the rebalancing process
+print("\n Total USDT:",pf_value_usdt, "\n")
+
+n = 0
+for element in range(len(df_merged)):
+    n = n + 1
+    coin_value = df_merged["difference"][element] * pf_value_usdt * threshold
+
+    #if coin_value < filters["minNotional"][element]:
+     #   print("Your transaction must be at least ", filters["minNotional"][element], "USD in order to be executed")
+    
+    if df_merged["difference"][element] > 0:
+        print(n," BUY:", round(coin_value/df_merged["price_USDT"][element], 3), df_merged["symbol"][element],  "            Worth:" ,round(coin_value, 3), "USDT")
+        if round(coin_value, 3) < float(filters["minNotional"][element]): 
+            print("Your transaction must be at least", float(filters["minNotional"][element]), "USDT in order to be executed \n")
+        else:
+            print("\n")
+    else:   
+        print(n," SELL:", round(abs(coin_value/df_merged["price_USDT"][element]), 3), df_merged["symbol"][element],  "            Worth:" ,abs(round(coin_value, 3)), "USDT")
+        if abs(round(coin_value, 3)) < float(filters["minNotional"][element]): 
+            print("Your transaction must be at least", float(filters["minNotional"][element]), "USD in order to be executed \n")
+        else:
+            print("\n")
 
 """
 # ERRORS: ---------------

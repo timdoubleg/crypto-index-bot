@@ -3,7 +3,7 @@ Title: Building an automated index for your binance account in Python
 
 Date: 04.11.2020 - 18.12.2020
 
-Technology: Python 3.6
+Technology: Python 3
 
 Authors: Tim Graf, Marvin Scherer, Henri de Montpellier
 
@@ -17,7 +17,6 @@ Authors: Tim Graf, Marvin Scherer, Henri de Montpellier
 
 This is the official code for a project in the course "Programming with Advanced Computer Languages" at the University of St. Gallen. The codes aim at rebalancing your assets on your binance account in order to reflect our index. The index is based on the ten biggest cryptoccurencies by market capitalization. Therefore, running the code will rebalance your binance portfolio so that it mimics the corresponding weights of the top ten cryptocurrencies' market capitalization.
 
-Technology: Python 3
 
 In order to do so, the code works as follows:
 

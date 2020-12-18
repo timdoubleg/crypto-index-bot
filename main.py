@@ -38,18 +38,25 @@ except:
 
 # BINANCE: Get prices from Binance
 prices_binance = client.get_all_tickers() 
-prices_binance = pd.DataFrame.from_dict(prices_binance) # Converts dictionary to dataframe
-prices_binance.loc[prices_binance['symbol']=='BTCUSDT'] # Check for BTCUSDT, we find it
+# Converts dictionary to dataframe
+prices_binance = pd.DataFrame.from_dict(prices_binance)
+# Check for BTCUSDT, we find it
+prices_binance.loc[prices_binance['symbol']=='BTCUSDT'] 
 
 # COINGECKO ------------------------------------
 cg = CoinGeckoAPI()
 
-# Get market caps from coingecko
-market_cap = pd.DataFrame.from_dict(cg.get_global()) #get the data from the api
-market_cap = market_cap.sort_values(by='market_cap_percentage', ascending=False, na_position='last') #sort by largest to smallest
-market_cap = market_cap.reset_index(drop=False) # reset index
-market_cap = market_cap.head(10) #only get top 10
-columns_marketcap = ['index', 'market_cap_percentage'] #add columns
+#Get market caps from coingecko
+#Get the data from the api
+market_cap = pd.DataFrame.from_dict(cg.get_global())
+#sort by largest to smallest
+market_cap = market_cap.sort_values(by='market_cap_percentage', ascending=False, na_position='last')
+#reset index
+market_cap = market_cap.reset_index(drop=False) 
+#only get top 10
+market_cap = market_cap.head(10) 
+#Add columns
+columns_marketcap = ['index', 'market_cap_percentage'] 
 market_cap = market_cap.drop(columns=[col for col in market_cap if col not in columns_marketcap]) #drop all columns we don't need
 market_cap = market_cap.rename(columns={'index': 'symbol'}) #change name of column
 market_cap['symbol'] = market_cap['symbol'] + 'usdt' # add USDT to string

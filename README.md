@@ -34,7 +34,7 @@ In order to do so, the code works as follows:
 
 4) These target weights are compared to your current assets' allocation in your binance portfolio.
     
-    ![alt text](/img.png)
+    ![Rebalancing_Overview](/Rebalancing_overview.png)
 
 5) Based on this comparison, the buy and sell orders are made so that your binance portfolio's assets are weighted as the top ten cryptocurrencies by market capitalization. However, some of the orders might be below the minimum quantity or the minimum notional value you can buy. This is mostly due to the Bitcoin dominance of the market. For instance, on 18.12.20 Bitcoin has a market cap of 64%, while the smallest coin in our top ten index (BNB) has 0.7%.
 

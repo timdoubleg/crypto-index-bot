@@ -10,6 +10,10 @@ from binance.enums import SIDE_BUY, SIDE_SELL, ORDER_TYPE_MARKET
 # default='warn'
 pd.options.mode.chained_assignment = None  
 
+# You can change the Threshold, we need it to account for fees
+threshold = 0.95
+
+
 # BINANCE ------------------------------------
 # Although fine for tutorial purposes, your API Keys should never be placed directly in the script like below. 
 # You should use a config file (cfg or yaml) to store them and reference when needed.
@@ -24,7 +28,7 @@ coin_balance = client.get_account()
 
 # Transform balance from dictionary to dataframe
 coin_balance = pd.DataFrame.from_dict(coin_balance['balances'])
-print("User's Balance: \n", coin_balance)
+
 
 #Transform values to integers and check if there are some assets in your binance account
 try:
@@ -35,6 +39,10 @@ except:
     print("You do not have any assets in your binance account. Please deposit some coins in your account and run the code.")
     exit()
 
+# Sort values after highest balance
+coin_balance = coin_balance.sort_values(by='free', ascending=False, na_position='last')
+print("User's Balance: \n", coin_balance)
+
 # BINANCE: Get prices from Binance
 prices_binance = client.get_all_tickers() 
 # Converts dictionary to dataframe
@@ -42,24 +50,35 @@ prices_binance = pd.DataFrame.from_dict(prices_binance)
 # Check for BTCUSDT, we find it
 prices_binance.loc[prices_binance['symbol']=='BTCUSDT'] 
 
+"""
+# Get all open orders
+print(client.get_all_orders(symbol=df_merged['symbol'][i]))
+# If this is empty then we have no open orders
+# Else, if your user balance shows locked values, then you have open orders
+"""
+
+
 # COINGECKO ------------------------------------
 cg = CoinGeckoAPI()
 
-#Get market caps from coingecko
-#Get the data from the api
+# Get market caps from coingecko API
 market_cap = pd.DataFrame.from_dict(cg.get_global())
-#sort by largest to smallest
+# Sort by largest to smallest
 market_cap = market_cap.sort_values(by='market_cap_percentage', ascending=False, na_position='last')
-#reset index
+# Reset index
 market_cap = market_cap.reset_index(drop=False) 
-#only get top 10
+# Only get top 10
 market_cap = market_cap.head(10) 
-#Add columns
+# Add columns
 columns_marketcap = ['index', 'market_cap_percentage'] 
-market_cap = market_cap.drop(columns=[col for col in market_cap if col not in columns_marketcap]) #drop all columns we don't need
-market_cap = market_cap.rename(columns={'index': 'symbol'}) #change name of column
-market_cap['symbol'] = market_cap['symbol'] + 'usdt' # add USDT to string
-market_cap['symbol'] = market_cap['symbol'].str.upper() # make the dataframe Uppercase to compare
+market_cap = market_cap.drop(columns=[col for col in market_cap if col not in columns_marketcap]) 
+# Drop all columns we don't need
+market_cap = market_cap.rename(columns={'index': 'symbol'}) 
+# Change name of column
+market_cap['symbol'] = market_cap['symbol'] + 'usdt' 
+# Add USDT to string
+market_cap['symbol'] = market_cap['symbol'].str.upper() 
+# Make the dataframe Uppercase to compare
 sum_caps = market_cap['market_cap_percentage'].sum() 
 market_cap['market_cap_percentage'] = (market_cap['market_cap_percentage']/sum_caps)
 
@@ -70,7 +89,7 @@ market_cap['market_cap_percentage'] = (market_cap['market_cap_percentage']/sum_c
 prices_binance.loc[prices_binance['symbol']=='USDTUSDT'] # Check for USDT
 prices_binance = prices_binance.append({'symbol': 'USDTUSDT', "price": 1}, ignore_index=True)
 prices_binance.loc[prices_binance['symbol']=='USDTUSDT'] # Check for USDT again, now we find it
-print("List of Prices: \n", prices_binance)
+#print("List of Prices: \n", prices_binance)
 
 # Create columns for later and some more data handling
 coin_balance['portfolio weights'] = 'NA'
@@ -125,7 +144,7 @@ df_merged['price_BTC'] = df_merged['price_BTC']/price_btc
 df_merged['difference'] = df_merged['market_cap_percentage'] - df_merged['portfolio weights']
 
 # Compare market_cap_perc and df
-print("List of Market Caps: \n", market_cap)
+# Print("List of Market Caps: \n", market_cap)
 df_merged = df_merged[(df_merged["free"] != 0) | (df_merged["market_cap_percentage"] != 0)]
 print("\nOverview of Assets and Rebalancing Differences: \n ", df_merged)
 # Reset index
@@ -140,17 +159,6 @@ pf_value_btc = pf_value_usdt/price_btc
 print('\n')
 print('Your USDT portfolio value is: ', pf_value_usdt)
 print('Your BTC portfolio value is: ', pf_value_btc)
-
-# REBALANCING - Printing the Rebalancing process orders -------------------------------------------------------------
-
-# Threshold as we need to account for fees
-threshold = 0.95
-
-"""
-# Get all open orders
-print(client.get_all_orders(symbol=df_merged['symbol'][i]))
-# If this is empty then we have no open orders
-"""
 
 
 
@@ -190,10 +198,10 @@ for i in range(len(df_merged)):
         filters['minNotional'][i] = info['filters'][3]['minNotional']
         filters['stepSize'][i] = info['filters'][2]['stepSize']
 
-print("List of Filters for Binance Trading: \n", filters)
+#print("List of Filters for Binance Trading: \n", filters)
 
 
-# Print the rebalancing process
+# Print the rebalancing process ----------------------------------------------------------------
 print("\n Total USDT:",pf_value_usdt, "\n")
 
 n = 0
@@ -218,7 +226,7 @@ for element in range(len(df_merged)):
             print("\n")
 
 """
-# ERRORS: ---------------
+# ERRORS: use this for manuall debugging ---------------
 
 #checks for the keys in the dictionary
 info = client.get_symbol_info('BTCUSDT') 
@@ -295,31 +303,6 @@ for i in range(len(df_merged)):
         print(symbol, 'error, something else went wrong')
 
 
-"""
-# ERRORS: for manual debugging ---------------
-print('\n')
-
-#checks for the keys in the dictionary
-info = client.get_symbol_info('BTCUSDT') 
-for key in info:
-    print(key, '->', info[key])
-
-# 1. If you get the error "BinanceAPIException: APIError(code=-1013): Filter failure: minQty"
-# This error appears because you are trying to create an order with a quantity lower than the minimun required.
-# Get minimum order amount
-print('Minimum Order Amount: ' + info['filters'][2]['minQty'])
-
-# 2. Error "BinanceAPIException: APIError(code=-1013): Filter failure: MIN_NOTIONAL"
-# This error appears when your order amount is smaller than the cost
-# Get minimum notional amount
-print('Minimum Notional: ' + info['filters'][3]['minNotional'])
-
-# 3. Error "LOT SIZE": This appears when either min qt, max qt, stepSize, or min notional is violated
-# Get stepSize
-print('stepSize: ' + info['filters'][2]['stepSize'])
-"""
-
-
 # PLACING ORDERS: For Loop for Rebalancing (Work in Progress) -----------------------------------------
 print('\n')
 
@@ -372,4 +355,65 @@ for i in range(len(df_merged)):
             print(df_merged['symbol'][i] +': another error occured, please check manually!')
 
 
-# PLACING ORDERS: For Loop for Rebalancing (Work in Progress) -----------------------------------------
+# PLACING ORDERS: For Loop for Rebalancing -----------------------------------------
+
+print('\n Please check if the above code shows succesful orders. If not, not all orders might be executed')
+
+while True: 
+    try:
+        answer = input('\n Do you want to proceed with the rebalancing?: y/n:  ')
+
+        if answer == 'y':
+            print('\n')
+            for i in range(len(df_merged)):
+                try:
+                    # set up the values
+                    symbol= df_merged['symbol'][i]
+                    minNotional = df_merged['minNotional'][i]
+                    stepSize = df_merged['stepSize'][i]
+                    minQty = df_merged['minQty'][i]
+                    price = df_merged['price_USDT'][i]
+                    difference = df_merged['difference'][i]
+
+                    # how many do we buy?
+                    quantity = abs((pf_value_usdt * threshold * difference)/price)
+
+                    # round the decimals
+                    decimals = abs(int(f'{stepSize:e}'.split('e')[-1]))
+                    quantity = round(quantity, decimals)
+
+                    # Sell order
+                    if df_merged['difference'][i] < 0:
+                        order = client.order_market_sell(
+                            symbol= symbol,
+                            quantity = quantity
+                            )
+                        print(df_merged['symbol'][i], ': succesful sell order: ', order)
+
+                    # Buy order
+                    elif df_merged['difference'][i] > 0:
+                        order = client.order_market_buy(
+                            symbol= symbol,
+                            quantity = quantity
+                            )
+                        print(df_merged['symbol'][i], ': succesful buy order: ', order)
+
+                except:  
+                    if quantity < minQty:
+                        print(symbol, ':', quantity, 'is smaller than minQty: ', minQty)
+                    if quantity*price < minNotional:
+                        print(symbol,  ':', round(quantity*price, decimals), 'is smaller than minNotional: ', minNotional)
+                    else:
+                        print(df_merged['symbol'][i] +': another error occured, please check manually!')          
+            break
+
+        # if answer is no
+        elif answer == 'n':
+            print('\n Will not rebalance')
+            break
+
+        else: 
+            print('please enter "y" or "n"')
+
+    except:
+        print('please enter "y" or "n"')

@@ -179,9 +179,9 @@ for i in range(len(df_merged)):
 #print("List of Filters for Binance Trading: \n", filters)
 
 
+"""
+# For Loop that prints important information on executing the orders -------------------
 
-<<<<<<< Updated upstream
-# For Loop that prints important information on executing the orders
 n = 0
 for i in range(len(df_merged)):
     n = n + 1
@@ -207,8 +207,7 @@ for i in range(len(df_merged)):
             print("Your transaction must be at least", float(filters["minNotional"][i]), "USD in order to be executed \n")
         else:
             print("\n")
-=======
->>>>>>> Stashed changes
+"""
 
 """
 # ERRORS: use this for manual debugging ---------------------------------------
@@ -258,15 +257,6 @@ df_merged = df_merged.reset_index(drop=True)
 # Print the rebalancing process VERSION TIM ----------------------------------------------------------------
 print("\n Total USDT:",pf_value_usdt, "\n")
 
-# For Loop that prints important information on executing the orders
-
-        if quantity < minQty:
-            print(symbol, ':', quantity, 'is smaller than minQty: ', minQty)
-        if quantity*price < minNotional:
-            print(symbol,  ':', round(quantity*price, decimals), 'is smaller than minNotional: ', minNotional)
-        else:
-            print(df_merged['symbol'][i] +': another error occured, please check manually!')
-
 
 for i in range(len(df_merged)):
 
@@ -288,22 +278,22 @@ for i in range(len(df_merged)):
     
     # Information for Buy Order
     if df_merged["difference"][i] > 0:
-        print(n," BUY:", round(coin_value/df_merged["price_USDT"][i], 3), df_merged["symbol"][i],  "            Worth:" ,round(coin_value, 3), "USDT")
+        print(i," BUY:", round(coin_value/df_merged["price_USDT"][i], 3), df_merged["symbol"][i],  "            Worth:" ,round(coin_value, 3), "USDT")
         # Accounting for filters
         if quantity < minQty:
-            print(symbol, ':', quantity, 'is smaller than minQty: ', minQty)
+            print("MinQty Error: Your transaction must be at least", minQty, 'of' , symbol)
         if quantity*price < minNotional: 
-            print("Your transaction must be at least", float(filters["minNotional"][i]), "USDT in order to be executed \n")
+            print("Min Notional Error: Your transaction must be at least", float(filters["minNotional"][i]), "USDT in order to be executed \n")
         else:
             print("\n")
 
     # Information for Sell Order
     else:   
-        print(n," SELL:", round(abs(coin_value/df_merged["price_USDT"][i]), 3), df_merged["symbol"][i],  "            Worth:" ,abs(round(coin_value, 3)), "USDT")
+        print(i," SELL:", round(abs(coin_value/df_merged["price_USDT"][i]), 3), df_merged["symbol"][i],  "            Worth:" ,abs(round(coin_value, 3)), "USDT")
         if quantity < minQty:
-            print(symbol, ':', quantity, 'is smaller than minQty: ', minQty)
+            print("MinQty Error: Your transaction must be at least", minQty, 'of' , symbol)
         if quantity*price < minNotional: 
-            print("Your transaction must be at least", float(filters["minNotional"][i]), "USD in order to be executed \n")
+            print("Min Notional Error: Your transaction must be at least", float(filters["minNotional"][i]), "USDT in order to be executed \n")
         else:
             print("\n")
 

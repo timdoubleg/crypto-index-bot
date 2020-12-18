@@ -216,7 +216,6 @@ df_merged['stepSize'] = pd.to_numeric(df_merged['stepSize'])
 #df_merged.dtypes)
 
 
-
 # TESTING - MANUAL - BINANCE FILTERS: Test if minQty, minNotional and account for the stepSize -------------------------------
 print('\n')
 

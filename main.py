@@ -7,7 +7,7 @@ import decimal
 import binance.enums
 
 # Turn off warnings test. The warning arrises with pandas. 
-# The code has been checked and it is a false positive.
+# The code has been checked and the warning is a false positive.
 # default='warn'
 pd.options.mode.chained_assignment = None  
 

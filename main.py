@@ -6,8 +6,9 @@ import pandas as pd
 # Turn off warnings test 
 pd.options.mode.chained_assignment = None  # default='warn'
 
-cg = CoinGeckoAPI()
 
+
+# BINANCE ------------------------------------
 # Although fine for tutorial purposes, your API Keys should never be placed directly in the script like below. 
 # You should use a config file (cfg or yaml) to store them and reference when needed.
 PUBLIC = 'r7NNoC9Y67xf2mmwSTYM1DwRA03Q3i6YHvKElp9aU6a3LFh0Fhmv0MRPSqBsAt6z'
@@ -32,6 +33,12 @@ except:
     print("You do not have any assets in your binance account. Please deposit some coins and run the code.")
     exit()
 
+# BINANCE: Get prices from Binance
+prices_binance = client.get_all_tickers() 
+prices_binance = pd.DataFrame.from_dict(prices_binance) # Converts dictionary to dataframe
+prices_binance.loc[prices_binance['symbol']=='BTCUSDT'] # Check for BTCUSDT, we find it
+
+# COINGECKO ------------------------------------
 # Get market caps from coingecko
 market_cap = pd.DataFrame.from_dict(cg.get_global()) #get the data from the api
 market_cap = market_cap.sort_values(by='market_cap_percentage', ascending=False, na_position='last') #sort by largest to smallest
@@ -60,10 +67,7 @@ prices.loc[prices['symbol']=='USDTUSDT'] #check for USDT again, now we find it
 print(prices)
 """
 
-# BINANCE: Get prices from Binance
-prices_binance = client.get_all_tickers() 
-prices_binance = pd.DataFrame.from_dict(prices_binance) # Converts dictionary to dataframe
-prices_binance.loc[prices_binance['symbol']=='BTCUSDT'] # Check for BTCUSDT, we find it
+# DATA HANDLING -------------------------------------------------------------
 
 # As USDTUSDT does not exist we need to append it
 prices_binance.loc[prices_binance['symbol']=='USDTUSDT'] # Check for USDT
@@ -78,7 +82,6 @@ coin_balance['USDT'] = 'NA'
 coin_balance = coin_balance.rename(columns={'asset': 'symbol'}) # Change name of column
 coin_balance['symbol'] = coin_balance['symbol'] + 'usdt' # Add USDT to string
 coin_balance['symbol'] = coin_balance['symbol'].str.upper() # Make the dataframe Uppercase to compare
-
 
 # Merge both dataframes
 coin_balance = coin_balance.rename(columns={'asset': 'symbol'})
@@ -100,7 +103,6 @@ portfolio_sum = portfolio_sum.sum()
 for i in range(len(df)):
     df['portfolio weights'][i] = df['USDT'][i]/portfolio_sum
 
-
 # Drop all not needed values from the df price 
 df_table_columns = ['symbol', 'price', 'free', 'portfolio weights', 'USDT']
 df = df.drop(columns=[col for col in df if col not in df_table_columns])
@@ -111,7 +113,6 @@ df_merged = pd.merge(df, market_cap, how ='left', on='symbol')
 df_merged = df_merged.sort_values(by='market_cap_percentage', ascending=False, na_position='last') 
 df_merged['market_cap_percentage'] = df_merged['market_cap_percentage'].fillna(0)
 
-
 # Calculate the differences
 df_merged['difference'] = df_merged['market_cap_percentage'] - df_merged['portfolio weights']
 
@@ -121,6 +122,36 @@ df_merged = df_merged[(df_merged["free"] != 0) | (df_merged["market_cap_percenta
 print("\nRebalancing: \n ", df_merged)
 # Reset index
 df_merged = df_merged.reset_index(drop=True) 
+
+
+"""
+# Replace USDT by BTC
+df_merged['symbol'] = df_merged['symbol'].str[:-4]
+df_merged['symbol'] = df_merged['symbol'] + 'BTC'
+"""
+
+# calculate total pf values
+index = df_merged.query('symbol == "BTCUSDT"').index
+price_btc = df_merged['price'][index][0]
+# Calculate the total portfolio value in btc
+pf_value_btc = pf_value_usdt/price_btc
+
+print('\n')
+print('Your USDT portfolio value is: ', pf_value_usdt)
+print('Your BTC portfolio value is: ', pf_value_btc)
+
+# Testing orders -------------------------------------------------------------
+
+from binance.enums import *
+
+# Threshold as we need to account for fees
+threshold = 0.95
+
+"""
+# Get all open orders
+print(client.get_all_orders(symbol=df_merged['symbol'][i]))
+# If this is empty then we have no open orders
+"""
 
 # Print the rebalancing process
 pf_value_usdt = df_merged["USDT"].sum()
@@ -136,36 +167,6 @@ for element in range(len(df_merged)):
         coin_value = df_merged["difference"][element] * pf_value_usdt
         print(n," Sell " , round(abs(coin_value), 3), "USD worth of" ,df_merged["symbol"][element])
 
-"""
-# Replace USDT by BTC
-df_merged['symbol'] = df_merged['symbol'].str[:-4]
-df_merged['symbol'] = df_merged['symbol'] + 'BTC'
-"""
-
-
-# Testing orders -------------------------------------------------------------
-
-from binance.enums import *
-
-# Threshold as we need to account for fees
-threshold = 0.95
-
-# calculate total pf values
-index = df_merged.query('symbol == "BTCUSDT"').index
-price_btc = df_merged['price'][index][0]
-# Calculate the total portfolio value in btc
-pf_value_btc = pf_value_usdt/price_btc
-
-print('\n')
-print('Your USDT portfolio value is: ', pf_value_usdt)
-print('Your BTC portfolio value is: ', pf_value_btc)
-
-
-"""
-# Get all open orders
-print(client.get_all_orders(symbol=df_merged['symbol'][i]))
-# If this is empty then we have no open orders
-"""
 
 # Extracting the minQty,stepSize, and minNotional to avoid errors: ---------------
 print('\n')

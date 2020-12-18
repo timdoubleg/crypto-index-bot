@@ -2,7 +2,6 @@ from pycoingecko import CoinGeckoAPI
 from binance.client import Client # Import the Binance Client
 from binance.websockets import BinanceSocketManager # Import the Binance Socket Manager
 import pandas as pd
-import decimal 
 import config
 from binance.enums import SIDE_BUY, SIDE_SELL, ORDER_TYPE_MARKET
 

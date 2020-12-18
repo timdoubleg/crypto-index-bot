@@ -64,20 +64,6 @@ market_cap['symbol'] = market_cap['symbol'].str.upper() # make the dataframe Upp
 sum_caps = market_cap['market_cap_percentage'].sum() 
 market_cap['market_cap_percentage'] = (market_cap['market_cap_percentage']/sum_caps)
 
-"""
-# COINGECKO: Get market cap data from 
-tickers = client.get_ticker()
-prices = pd.DataFrame.from_dict(tickers)
-prices_table_columns = ['symbol']
-prices = prices.drop(columns=[col for col in prices if col not in prices_table_columns]) #drop all values not needed
-prices.loc[prices['symbol']=='BTCUSDT'] #check for USDT
-
-# COINGECKO: As USDTUSDT does not exist we need to append it
-prices.loc[prices['symbol']=='USDTUSDT'] #check for USDT
-prices = prices.append({'symbol': 'USDTUSDT', "lastPrice": 1}, ignore_index=True)
-prices.loc[prices['symbol']=='USDTUSDT'] #check for USDT again, now we find it
-print(prices)
-"""
 
 # DATA HANDLING -------------------------------------------------------------
 
@@ -86,7 +72,6 @@ prices_binance.loc[prices_binance['symbol']=='USDTUSDT'] # Check for USDT
 prices_binance = prices_binance.append({'symbol': 'USDTUSDT', "price": 1}, ignore_index=True)
 prices_binance.loc[prices_binance['symbol']=='USDTUSDT'] # Check for USDT again, now we find it
 print("List of Prices: \n", prices_binance)
-
 
 # Create columns for later and some more data handling
 coin_balance['portfolio weights'] = 'NA'
@@ -156,7 +141,7 @@ print('\n')
 print('Your USDT portfolio value is: ', pf_value_usdt)
 print('Your BTC portfolio value is: ', pf_value_btc)
 
-# Printing the Rebalancing process orders -------------------------------------------------------------
+# REBALANCING - Printing the Rebalancing process orders -------------------------------------------------------------
 
 # Threshold as we need to account for fees
 threshold = 0.95
@@ -181,7 +166,7 @@ for element in range(len(df_merged)):
         print(n," Sell " , round(abs(coin_value), 3), "USD worth of" ,df_merged["symbol"][element])
 
 
-# Extracting the minQty,stepSize, and minNotional to avoid errors: ---------------
+# BINANCE TRADING FILTERS - Extracting the minQty,stepSize, and minNotional to avoid errors: ---------------
 print('\n')
 # Create an empty dataframe
 index = range(len(df_merged))
@@ -235,17 +220,12 @@ df_merged['minQty'] = pd.to_numeric(df_merged['minQty'])
 df_merged['minNotional'] = pd.to_numeric(df_merged['minNotional'])
 df_merged['stepSize'] = pd.to_numeric(df_merged['stepSize'])
 #check for types
-print(df_merged.dtypes)
+#df_merged.dtypes)
 
 
 
-# MANUAL TESTING OF BINANCE FILTERS: Test if minQty, minNotional and account for the stepSize -------------------------------
+# TESTING - MANUAL - BINANCE FILTERS: Test if minQty, minNotional and account for the stepSize -------------------------------
 print('\n')
-
-# merge 
-df_merged = pd.merge(df_merged, prices_binance, on='symbol', how='left')
-df_merged = df_merged.rename(columns={'price_x': 'price_USDT', 'price_y': 'price_BTC'}) #change name of column
-df_merged['price_BTC'] = pd.to_numeric(df_merged['price_BTC'])
 
 
 i = 2
@@ -297,7 +277,7 @@ except:
 
 
 
-# FOR LOOP: Test if minQty, minNotional and account for the stepSize -------------------------------
+# TESTING - FOR LOOP - BINANCE FILTERS: Test if minQty, minNotional and account for the stepSize -------------------------------
 print('\n')
 
 for i in range(len(df_merged)):

@@ -1,10 +1,10 @@
 from pycoingecko import CoinGeckoAPI
 # Import the Binance Client
 from binance.client import Client 
-# Import the Binance Socket Manager
 from binance.websockets import BinanceSocketManager 
 import pandas as pd
 # The config file is where you store your Binance API keys, make sure to add your own keys.
+# Config.py is where you store your Binance API keys, make sure to add your own keys.
 import config
 from binance.enums import SIDE_BUY, SIDE_SELL, ORDER_TYPE_MARKET
 

@@ -17,17 +17,23 @@ pd.options.mode.chained_assignment = None
 # You can change the threshold, we need it to account for fees
 threshold = 0.95
 
+
+# BINANCE -------------------------------------------------------
+
 # Instantiate a Client 
 client = Client(api_key=config.API_PUBLIC, api_secret=config.API_SECRET)
 
 # Gets data from account balance as dictionary
 coin_balance = client.get_account()
-
 # Transform balance from dictionary to dataframe
 coin_balance = pd.DataFrame.from_dict(coin_balance['balances'])
 
+<<<<<<< Updated upstream
 
 # Transform values to integers and check if there are some assets in your binance account
+=======
+#Transform values to integers and check if there are some assets in your binance account
+>>>>>>> Stashed changes
 try:
     coin_balance['free'] = pd.to_numeric(coin_balance['free'])
     coin_balance['locked'] = pd.to_numeric(coin_balance['locked'])
@@ -60,7 +66,9 @@ cg = CoinGeckoAPI()
 
 # Get market caps from coingecko API
 market_cap = pd.DataFrame.from_dict(cg.get_global())
+
 # Sort by largest to smallest
+<<<<<<< Updated upstream
 market_cap = market_cap.sort_values(by = 'market_cap_percentage', ascending = False, na_position = 'last')
 # Reset index
 market_cap = market_cap.reset_index(drop = False) 
@@ -73,9 +81,23 @@ market_cap = market_cap.drop(columns = [col for col in market_cap if col not in 
 market_cap = market_cap.rename(columns = {'index': 'symbol'}) 
 # Change name of column
 market_cap['symbol'] = market_cap['symbol'] + 'usdt' 
+=======
+market_cap = market_cap.sort_values(by='market_cap_percentage', ascending=False, na_position='last')
+market_cap = market_cap.reset_index(drop=False) 
+
+# Only get top 10
+market_cap = market_cap.head(10) 
+# Add columns and drop all we don't need
+columns_marketcap = ['index', 'market_cap_percentage']
+market_cap = market_cap.drop(columns=[col for col in market_cap if col not in columns_marketcap]) 
+market_cap = market_cap.rename(columns={'index': 'symbol'}) 
+>>>>>>> Stashed changes
 # Add USDT to string
-market_cap['symbol'] = market_cap['symbol'].str.upper() 
+market_cap['symbol'] = market_cap['symbol'] + 'usdt' 
 # Make the dataframe Uppercase to compare
+market_cap['symbol'] = market_cap['symbol'].str.upper() 
+
+# Calculate the Sums 
 sum_caps = market_cap['market_cap_percentage'].sum() 
 market_cap['market_cap_percentage'] = (market_cap['market_cap_percentage']/sum_caps)
 

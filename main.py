@@ -2,6 +2,9 @@ from pycoingecko import CoinGeckoAPI
 from binance.client import Client # Import the Binance Client
 from binance.websockets import BinanceSocketManager # Import the Binance Socket Manager
 import pandas as pd
+from decimal import *
+from binance.enums import *
+
 
 # Turn off warnings test 
 pd.options.mode.chained_assignment = None  # default='warn'
@@ -143,8 +146,6 @@ print('Your BTC portfolio value is: ', pf_value_btc)
 
 # Testing orders -------------------------------------------------------------
 
-from binance.enums import *
-
 # Threshold as we need to account for fees
 threshold = 0.95
 
@@ -233,7 +234,7 @@ print('stepSize: ' + info['filters'][2]['stepSize'])
 """
 
 
-# Transform to numeric -------------------------------
+# DATA HANDLING: Transform to numeric -------------------------------
 print('\n')
 
 
@@ -241,27 +242,25 @@ print('\n')
 df_merged['symbol'] = df_merged['symbol'].replace(['USDTBTC'],'BTCUSDT')
 # merge dataframes
 df_merged = pd.merge(df_merged, filters, how ='left', on='symbol')
-#transform columns to numeric
+# transform columns to numeric
 df_merged['difference'] = pd.to_numeric(df_merged['difference'])
 df_merged['portfolio weights'] = pd.to_numeric(df_merged['portfolio weights'])
 df_merged['minQty'] = pd.to_numeric(df_merged['minQty'])
 df_merged['minNotional'] = pd.to_numeric(df_merged['minNotional'])
 df_merged['stepSize'] = pd.to_numeric(df_merged['stepSize'])
-#check for types
-print(df_merged.dtypes)
+# check for types
+#print(df_merged.dtypes)
 
 
 
 # MANUAL: Test if minQty, minNotional and account for the stepSize -------------------------------
 print('\n')
 
+
 # merge 
 df_merged = pd.merge(df_merged, prices_binance, on='symbol', how='left')
 df_merged = df_merged.rename(columns={'price_x': 'price_USDT', 'price_y': 'price_BTC'}) #change name of column
 df_merged['price_BTC'] = pd.to_numeric(df_merged['price_BTC'])
-
-
-from decimal import *
 
 i = 2
 symbol= df_merged['symbol'][i]
@@ -271,15 +270,12 @@ minQty = df_merged['minQty'][i]
 price = df_merged['price_USDT'][i]
 difference = df_merged['difference'][i]
 
-
 # how many do we buy?
 quantity = abs(pf_value_usdt * difference * threshold)
-
 
 # round the decimals
 decimals = abs(int(f'{stepSize:e}'.split('e')[-1]))
 quantity = round(quantity, decimals)
-
 
 # run the tests
 if quantity < minQty:
@@ -288,7 +284,6 @@ if quantity*price < minNotional:
     print(symbol, quantity*price, 'is smaller than minNotional: ', minNotional)
 else:
     print(symbol, ' passed all tests')
-
 
 # Test order BUY
 try: 
@@ -301,7 +296,6 @@ try:
                 )
 
         print(df_merged['symbol'][i], ': BUY order: ', order)
-
 
     # Test order SELL
     elif df_merged['difference'][i] < 0:

@@ -143,8 +143,7 @@ print('Your BTC portfolio value is: ', pf_value_btc)
 
 # Testing orders -------------------------------------------------------------
 
-from binance.enums import *
-
+import binance.enums
 # Threshold as we need to account for fees
 threshold = 0.95
 
@@ -261,7 +260,7 @@ df_merged = df_merged.rename(columns={'price_x': 'price_USDT', 'price_y': 'price
 df_merged['price_BTC'] = pd.to_numeric(df_merged['price_BTC'])
 
 
-from decimal import *
+import decimal 
 
 i = 2
 symbol= df_merged['symbol'][i]

@@ -232,7 +232,6 @@ print('stepSize: ' + info['filters'][2]['stepSize'])
 
 # DATA HANDLING: Transform to numeric -------------------------------
 
-
 # Exchange USDTBTC for the inverse as only BTCUSDT exists as a trading pair
 df_merged['symbol'] = df_merged['symbol'].replace(['USDTBTC'],'BTCUSDT')
 # Merge dataframes
@@ -250,7 +249,6 @@ df_merged['stepSize'] = pd.to_numeric(df_merged['stepSize'])
 index = df_merged.query('symbol == "USDTUSDT"').index[0]
 df_merged = df_merged.drop(index=index)
 df_merged = df_merged.reset_index(drop=True) 
-
 
 
 # PLACING TEST ORDERS: For Loop for Rebalancing (Work in Progress) -----------------------------------------
@@ -307,7 +305,7 @@ for i in range(len(df_merged)):
 
 # PLACING ORDERS: For Loop for Rebalancing -----------------------------------------
 
-print('\n Please check if the above code shows succesful orders. If not, not all orders might be executed')
+print('\n Please check if the above testing shows success. If not, some or all orders might be executed')
 
 while True: 
     try:

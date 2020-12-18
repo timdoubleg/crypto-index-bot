@@ -10,6 +10,7 @@ import config
 # default = 'warn'
 pd.options.mode.chained_assignment = None  
 
+
 # You can change the threshold, we need it to account for fees
 threshold = 0.95
 

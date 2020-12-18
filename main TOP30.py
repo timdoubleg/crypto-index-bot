@@ -5,6 +5,8 @@ import pandas as pd
 from requests import Request, Session
 from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 import json
+import decimal
+import binance.enums
 
 # Turn off warnings test 
 pd.options.mode.chained_assignment = None  # default='warn'

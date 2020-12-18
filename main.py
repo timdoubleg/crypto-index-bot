@@ -149,7 +149,7 @@ print('\n')
 print('Your USDT portfolio value is: ', pf_value_usdt)
 print('Your BTC portfolio value is: ', pf_value_btc)
 
-# Testing orders -------------------------------------------------------------
+# Printing the Rebalancing process orders -------------------------------------------------------------
 
 # Threshold as we need to account for fees
 threshold = 0.95
@@ -213,33 +213,7 @@ for i in range(len(df_merged)):
 print(filters)
 
 
-"""
-# ERRORS: ---------------
-print('\n')
-
-#checks for the keys in the dictionary
-info = client.get_symbol_info('BTCUSDT') 
-for key in info:
-    print(key, '->', info[key])
-
-# 1. If you get the error "BinanceAPIException: APIError(code=-1013): Filter failure: minQty"
-# This error appears because you are trying to create an order with a quantity lower than the minimun required.
-# Get minimum order amount
-print('Minimum Order Amount: ' + info['filters'][2]['minQty'])
-
-# 2. Error "BinanceAPIException: APIError(code=-1013): Filter failure: MIN_NOTIONAL"
-# This error appears when your order amount is smaller than the cost
-# Get minimum notional amount
-print('Minimum Notional: ' + info['filters'][3]['minNotional'])
-
-# 3. Error "LOT SIZE": This appears when either min qt, max qt, stepSize, or min notional is violated
-# Get stepSize
-print('stepSize: ' + info['filters'][2]['stepSize'])
-
-"""
-
-
-# Transform to numeric -------------------------------
+# DATA HANDLING: Transform to numeric -------------------------------
 print('\n')
 
 
@@ -258,7 +232,7 @@ print(df_merged.dtypes)
 
 
 
-# MANUAL: Test if minQty, minNotional and account for the stepSize -------------------------------
+# MANUAL TESTING OF BINANCE FILTERS: Test if minQty, minNotional and account for the stepSize -------------------------------
 print('\n')
 
 # merge 
@@ -275,15 +249,12 @@ minQty = df_merged['minQty'][i]
 price = df_merged['price_USDT'][i]
 difference = df_merged['difference'][i]
 
-
 # how many do we buy?
 quantity = abs(pf_value_usdt * difference * threshold)
-
 
 # round the decimals
 decimals = abs(int(f'{stepSize:e}'.split('e')[-1]))
 quantity = round(quantity, decimals)
-
 
 # run the tests
 if quantity < minQty:
@@ -292,7 +263,6 @@ if quantity*price < minNotional:
     print(symbol, quantity*price, 'is smaller than minNotional: ', minNotional)
 else:
     print(symbol, ' passed all tests')
-
 
 # Test order BUY
 try: 
@@ -306,7 +276,6 @@ try:
 
         print(df_merged['symbol'][i], ': BUY order: ', order)
 
-
     # Test order SELL
     elif df_merged['difference'][i] < 0:
         order = client.create_test_order(
@@ -318,6 +287,7 @@ try:
         print(df_merged['symbol'][i], ': SELL order: ', order)
 except:
     print('there is an error with', symbol, 'please check it manually')
+
 
 
 # FOR LOOP: Test if minQty, minNotional and account for the stepSize -------------------------------
@@ -375,7 +345,33 @@ for i in range(len(df_merged)):
 
 
 """
-# For Loop for Rebalancing (Work in Progress) -----------------------------------------
+# ERRORS: for manual debugging ---------------
+print('\n')
+
+#checks for the keys in the dictionary
+info = client.get_symbol_info('BTCUSDT') 
+for key in info:
+    print(key, '->', info[key])
+
+# 1. If you get the error "BinanceAPIException: APIError(code=-1013): Filter failure: minQty"
+# This error appears because you are trying to create an order with a quantity lower than the minimun required.
+# Get minimum order amount
+print('Minimum Order Amount: ' + info['filters'][2]['minQty'])
+
+# 2. Error "BinanceAPIException: APIError(code=-1013): Filter failure: MIN_NOTIONAL"
+# This error appears when your order amount is smaller than the cost
+# Get minimum notional amount
+print('Minimum Notional: ' + info['filters'][3]['minNotional'])
+
+# 3. Error "LOT SIZE": This appears when either min qt, max qt, stepSize, or min notional is violated
+# Get stepSize
+print('stepSize: ' + info['filters'][2]['stepSize'])
+
+"""
+
+
+"""
+# PLACING ORDERS: For Loop for Rebalancing (Work in Progress) -----------------------------------------
 print('\n')
 
 # for i = 3 we have a scientific output for stepSize

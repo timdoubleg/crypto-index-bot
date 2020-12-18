@@ -45,8 +45,12 @@ Hence, the code will propose you two possibilities ```Do you want to proceed wit
     2)  "n" will not place the orders so that you can deposit additional funds in order to have enough assets to enable your portfolio to reflect the top 10 cryptocurrencies' allocation.
 
 ## Assumptions
-The code assumes that you already have some cryptocurrencies on your binance account.
-The code rebalances 95% of your assets in order to keep 5% for any transaction costs. However, you can change the threshold.   
+
+* The code assumes that you already have some cryptocurrencies on your binance account.
+
+* The code rebalances 95% of your assets in order to keep 5% for any transaction costs. However, you can change the threshold.
+
+* The rebalancing process will only take place with USDT trading pairs.
 
 # Installation
 This project requires the following packages: pandas, python-binance, pycoingecko.

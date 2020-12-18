@@ -114,7 +114,8 @@ df_merged['market_cap_percentage'] = df_merged['market_cap_percentage'].fillna(0
 df_merged = pd.merge(df_merged, prices_binance, on='symbol', how='left')
 
 # calculate prices_USDT and prices_BTC
-df_merged = df_merged.rename(columns={'price_x': 'price_USDT', 'price_y': 'price_BTC'}) #change name of column
+# change name of column
+df_merged = df_merged.rename(columns={'price_x': 'price_USDT', 'price_y': 'price_BTC'}) 
 index = df_merged.query('symbol == "BTCUSDT"').index
 price_btc = df_merged['price_BTC'][index][0]
 price_btc = float(price_btc)

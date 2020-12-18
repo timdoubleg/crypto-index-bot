@@ -337,6 +337,8 @@ print('\n')
 
 # for i = 3 we have a scientific output for stepSize
 
+print('Overview of outcomes when testing orders:')
+print('\n')
 for i in range(len(df_merged)):
 
     try:
@@ -376,9 +378,9 @@ for i in range(len(df_merged)):
 
     except:  
         if quantity < minQty:
-            print(symbol, ' :', quantity, 'is smaller than minQty: ', minQty)
+            print(symbol, ':', quantity, 'is smaller than minQty: ', minQty)
         if quantity*price < minNotional:
-            print(symbol,  ' :', round(quantity*price, decimals), 'is smaller than minNotional: ', minNotional)
+            print(symbol,  ':', round(quantity*price, decimals), 'is smaller than minNotional: ', minNotional)
         else:
             print(df_merged['symbol'][i] +': another error occured, please check manually!')
 

@@ -205,9 +205,9 @@ for i in range(len(df_merged)):
             print("\n")
 
 """
-# ERRORS: use this for manual debugging ---------------
+# ERRORS: use this for manual debugging ---------------------------------------
 
-# Checks for the keys in the dictionary
+# Get the trading rules ('filters') from Binance and check for the keys in the dictionary
 info = client.get_symbol_info('BTCUSDT') 
 for key in info:
     print(key, '->', info[key])
@@ -222,9 +222,11 @@ print('Minimum Order Amount: ' + info['filters'][2]['minQty'])
 # Get minimum notional amount
 print('Minimum Notional: ' + info['filters'][3]['minNotional'])
 
-# 3. Error "LOT SIZE": This appears when either min qt, max qt, stepSize, or min notional is violated
-# Get stepSize
+# 3. Error "BinanceAPIException: APIError(code=-1013): Filter failure: stepSize"
+# This error appears if your order is not in the decimal dimension as the stepSize
 print('stepSize: ' + info['filters'][2]['stepSize'])
+
+# 4. Error "LOT SIZE": This appears when either min qt, max qt, stepSize, or min notional is violated
 """
 
 
@@ -251,37 +253,7 @@ df_merged = df_merged.reset_index(drop=True)
 
 
 
-# TESTING - FOR LOOP - BINANCE FILTERS: Test if minQty, minNotional and account for the stepSize -------------------------------
-print('\n', 'Overview of Binance Filter Tests')
-
-for i in range(len(df_merged)):
-    try: 
-        symbol= df_merged['symbol'][i]
-        minNotional = df_merged['minNotional'][i]
-        stepSize = df_merged['stepSize'][i]
-        minQty = df_merged['minQty'][i]
-        price = df_merged['price_USDT'][i]
-        difference = df_merged['difference'][i]
-
-        # How many do we buy?
-        quantity = abs((pf_value_usdt * threshold * difference)/price)
-
-        # Round the decimals
-        decimals = abs(int(f'{stepSize:e}'.split('e')[-1]))
-        quantity = round(quantity, decimals)
-
-        # Run the tests
-        if quantity < minQty:
-            print(symbol, quantity, 'is smaller than minQty: ', minQty)
-        if quantity * price < minNotional:
-            print(symbol, round(quantity*price, decimals), 'is smaller than minNotional: ', minNotional)
-        else:
-            print(symbol, ' passed all tests')
-    except:
-        print(symbol, 'error, something else went wrong')
-
-
-# PLACING ORDERS: For Loop for Rebalancing (Work in Progress) -----------------------------------------
+# PLACING TEST ORDERS: For Loop for Rebalancing (Work in Progress) -----------------------------------------
 print('\n')
 
 # for i = 3 we have a scientific output for stepSize

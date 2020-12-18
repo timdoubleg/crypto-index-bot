@@ -2,8 +2,8 @@ from pycoingecko import CoinGeckoAPI
 from binance.client import Client # Import the Binance Client
 from binance.websockets import BinanceSocketManager # Import the Binance Socket Manager
 import pandas as pd
-from decimal import *
-from binance.enums import *
+import decimal
+import binance.enums
 
 
 # Turn off warnings test 

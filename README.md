@@ -30,7 +30,7 @@ In order to do so, the code works as follows:
 
 * Fourthly, these targeted weights are compared to your current assets' allocation in your binance portfolio. As follows:
 
-![](/Adjusted_MC.png)
+![](/.png)
 
 * Finally, based on this comparison, the buy and sell orders are made so that your binance portfolio's assets are equally weighted as the top ten cryptocurrencies by market capitalization. However, some of the orders might be below the minimum quantity or the minimum value you can buy. This is mostly due to the important Bitcoin dominance of the market. Therefore, the code will propose you two possibilities ```Do you want to proceed with rebalancing? y/n``` 
 

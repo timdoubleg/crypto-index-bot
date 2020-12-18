@@ -359,8 +359,8 @@ for i in range(len(df_merged)):
         # Sell order
         if df_merged['difference'][i] < 0:
             order = client.create_test_order(
-                symbol= SIDE_SELL,
-                side='SELL',
+                symbol= symbol,
+                side=SIDE_SELL,
                 type=ORDER_TYPE_MARKET,
                 quantity = quantity
                 )

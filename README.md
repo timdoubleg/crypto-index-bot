@@ -1,11 +1,11 @@
 # PWACL
-Title: Building an automated index for your binance account in Python
+*Building an automated TOP 10- index for your binance account in Python*
 
-Date: 04.11.2020 - 18.12.2020
+*Date*: 04.11.2020 - 18.12.2020
 
-Technology: Python 3
+*Technology*: Python 3
 
-Authors: Tim Graf, Marvin Scherer, Henri de Montpellier
+*Authors*: Tim Graf, Marvin Scherer, Henri de Montpellier
 
 ## Table of contents
 * [Description](#Description)
@@ -15,7 +15,7 @@ Authors: Tim Graf, Marvin Scherer, Henri de Montpellier
 
 # Description:
 
-This is the official code for a project in the course "Programming with Advanced Computer Languages" at the University of St. Gallen. The codes aim at rebalancing your assets on your binance account in order to reflect our index. The index is based on the ten biggest cryptoccurencies by market capitalization. Therefore, running the code will rebalance your binance portfolio so that it mimics the corresponding weights of the top ten cryptocurrencies' market capitalization.
+This is the official code for a project in the course _"Programming with Advanced Computer Languages"_ at the University of St. Gallen. The codes aim at rebalancing your assets on your binance account in order to reflect our index. The index is based on the ten biggest cryptoccurencies by market capitalization. Therefore, running the code will rebalance your binance portfolio so that it mimics the corresponding weights of the top ten cryptocurrencies' market capitalization.
 
 
 In order to do so, the code works as follows:
@@ -36,7 +36,7 @@ In order to do so, the code works as follows:
 
     1)  ```y``` will disregard the smaller coins allocation and rebalance the portfolio based on the coins that are buyable. (Please note that in that case your portfolio will not reflect the ten biggest cryptocurrencies and will disregard the smaller ones)
 
-    2)  ```n``` The code will not place the orders so that you can import additional funds in order to have enough assets to enable your portfolio to reflect the top 10 cryptocurrencies' allocation.
+    2)  ```n``` will not place the orders so that you can import additional funds in order to have enough assets to enable your portfolio to reflect the top 10 cryptocurrencies' allocation.
 
 ## Assumption: 
 The code assumes that you already have some cryptocurrencies on your binance account.
@@ -51,7 +51,7 @@ This project requires the following packages: pandas, python-binance, pycoingeck
     $ pip3 freeze > requirements.txt
     $ pip3 install -r requirements.txt
     ```
-2) Put your own "API_KEY" and "API_SECRET" from your Binance Account in config.py and run config.py code. 
+2) Put your own "API_PUBLIC" and "API_SECRET" from your Binance Account in config.py and run config.py code. 
 (Alternatively, you can use the keys already written in the file which are linked the creators of the code's own binance account)
 
 # Sources

@@ -39,6 +39,8 @@ prices_binance = client.get_all_tickers()
 prices_binance = pd.DataFrame.from_dict(prices_binance) # Converts dictionary to dataframe
 prices_binance.loc[prices_binance['symbol']=='BTCUSDT'] # Check for BTCUSDT, we find it
 
+
+
 # COINGECKO ------------------------------------
 cg = CoinGeckoAPI()
 
@@ -110,11 +112,16 @@ for i in range(len(df)):
 df_table_columns = ['symbol', 'price', 'free', 'portfolio weights', 'USDT']
 df = df.drop(columns=[col for col in df if col not in df_table_columns])
 
-# Merge both dataframes
+# Merge market cap with our main df 
 df_merged = pd.merge(df, market_cap, how ='left', on='symbol')
 # Sort by largest to smallest
 df_merged = df_merged.sort_values(by='market_cap_percentage', ascending=False, na_position='last') 
 df_merged['market_cap_percentage'] = df_merged['market_cap_percentage'].fillna(0)
+
+# Merge binance prices with our main df
+df_merged = pd.merge(df_merged, prices_binance, on='symbol', how='left')
+df_merged = df_merged.rename(columns={'price_x': 'price_USDT', 'price_y': 'price_BTC'}) #change name of column
+df_merged['price_BTC'] = pd.to_numeric(df_merged['price_BTC'])
 
 # Calculate the differences
 df_merged['difference'] = df_merged['market_cap_percentage'] - df_merged['portfolio weights']
@@ -126,7 +133,6 @@ print("\nRebalancing: \n ", df_merged)
 # Reset index
 df_merged = df_merged.reset_index(drop=True) 
 
-
 """
 # Replace USDT by BTC
 df_merged['symbol'] = df_merged['symbol'].str[:-4]
@@ -135,7 +141,7 @@ df_merged['symbol'] = df_merged['symbol'] + 'BTC'
 
 # calculate total pf values
 index = df_merged.query('symbol == "BTCUSDT"').index
-price_btc = df_merged['price'][index][0]
+price_btc = df_merged['price_BTC'][index][0]
 pf_value_usdt = df_merged["USDT"].sum()
 # Calculate the total portfolio value in btc
 pf_value_btc = pf_value_usdt/price_btc
@@ -237,7 +243,6 @@ print('stepSize: ' + info['filters'][2]['stepSize'])
 # DATA HANDLING: Transform to numeric -------------------------------
 print('\n')
 
-
 # exchange USDTBTC for the inverse as only BTCUSDT exists as a trading pair
 df_merged['symbol'] = df_merged['symbol'].replace(['USDTBTC'],'BTCUSDT')
 # merge dataframes
@@ -252,15 +257,9 @@ df_merged['stepSize'] = pd.to_numeric(df_merged['stepSize'])
 #print(df_merged.dtypes)
 
 
-
 # MANUAL: Test if minQty, minNotional and account for the stepSize -------------------------------
 print('\n')
 
-
-# merge 
-df_merged = pd.merge(df_merged, prices_binance, on='symbol', how='left')
-df_merged = df_merged.rename(columns={'price_x': 'price_USDT', 'price_y': 'price_BTC'}) #change name of column
-df_merged['price_BTC'] = pd.to_numeric(df_merged['price_BTC'])
 
 i = 2
 symbol= df_merged['symbol'][i]

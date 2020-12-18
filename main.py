@@ -24,7 +24,7 @@ coin_balance = client.get_account()
 
 # Transform balance from dictionary to dataframe
 coin_balance = pd.DataFrame.from_dict(coin_balance['balances'])
-print("User's Balance: \n", coin_balance)
+
 
 #Transform values to integers and check if there are some assets in your binance account
 try:
@@ -34,6 +34,10 @@ try:
 except:
     print("You do not have any assets in your binance account. Please deposit some coins in your account and run the code.")
     exit()
+
+# Sort values after highest balance
+coin_balance = coin_balance.sort_values(by='free', ascending=False, na_position='last')
+print("User's Balance: \n", coin_balance)
 
 # BINANCE: Get prices from Binance
 prices_binance = client.get_all_tickers() 
@@ -295,31 +299,6 @@ for i in range(len(df_merged)):
         print(symbol, 'error, something else went wrong')
 
 
-"""
-# ERRORS: for manual debugging ---------------
-print('\n')
-
-#checks for the keys in the dictionary
-info = client.get_symbol_info('BTCUSDT') 
-for key in info:
-    print(key, '->', info[key])
-
-# 1. If you get the error "BinanceAPIException: APIError(code=-1013): Filter failure: minQty"
-# This error appears because you are trying to create an order with a quantity lower than the minimun required.
-# Get minimum order amount
-print('Minimum Order Amount: ' + info['filters'][2]['minQty'])
-
-# 2. Error "BinanceAPIException: APIError(code=-1013): Filter failure: MIN_NOTIONAL"
-# This error appears when your order amount is smaller than the cost
-# Get minimum notional amount
-print('Minimum Notional: ' + info['filters'][3]['minNotional'])
-
-# 3. Error "LOT SIZE": This appears when either min qt, max qt, stepSize, or min notional is violated
-# Get stepSize
-print('stepSize: ' + info['filters'][2]['stepSize'])
-"""
-
-
 # PLACING ORDERS: For Loop for Rebalancing (Work in Progress) -----------------------------------------
 print('\n')
 
@@ -372,5 +351,65 @@ for i in range(len(df_merged)):
             print(df_merged['symbol'][i] +': another error occured, please check manually!')
 
 
-# PLACING ORDERS: For Loop for Rebalancing (Work in Progress) -----------------------------------------
+# PLACING ORDERS: For Loop for Rebalancing -----------------------------------------
 
+print('\n Please check if the above code shows succesful orders. If not, not all orders might be executed')
+
+while True: 
+    try:
+        answer = input('\n Do you want to proceed with the rebalancing?: y/n:  ')
+
+        if answer == 'y':
+            print('\n')
+            for i in range(len(df_merged)):
+                try:
+                    # set up the values
+                    symbol= df_merged['symbol'][i]
+                    minNotional = df_merged['minNotional'][i]
+                    stepSize = df_merged['stepSize'][i]
+                    minQty = df_merged['minQty'][i]
+                    price = df_merged['price_USDT'][i]
+                    difference = df_merged['difference'][i]
+
+                    # how many do we buy?
+                    quantity = abs((pf_value_usdt * threshold * difference)/price)
+
+                    # round the decimals
+                    decimals = abs(int(f'{stepSize:e}'.split('e')[-1]))
+                    quantity = round(quantity, decimals)
+
+                    # Sell order
+                    if df_merged['difference'][i] < 0:
+                        order = client.order_market_sell(
+                            symbol= symbol,
+                            quantity = quantity
+                            )
+                        print(df_merged['symbol'][i], ': succesful sell order: ', order)
+
+                    # Buy order
+                    elif df_merged['difference'][i] > 0:
+                        order = client.order_market_buy(
+                            symbol= symbol,
+                            quantity = quantity
+                            )
+                        print(df_merged['symbol'][i], ': succesful buy order: ', order)
+
+                except:  
+                    if quantity < minQty:
+                        print(symbol, ':', quantity, 'is smaller than minQty: ', minQty)
+                    if quantity*price < minNotional:
+                        print(symbol,  ':', round(quantity*price, decimals), 'is smaller than minNotional: ', minNotional)
+                    else:
+                        print(df_merged['symbol'][i] +': another error occured, please check manually!')          
+            break
+
+        # if answer is no
+        elif answer == 'n':
+            print('\n Will not rebalance')
+            break
+
+        else: 
+            print('please enter "y" or "n"')
+
+    except:
+        print('please enter "y" or "n"')

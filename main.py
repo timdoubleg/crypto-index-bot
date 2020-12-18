@@ -115,7 +115,7 @@ df = df.drop(columns=[col for col in df if col not in df_table_columns])
 # Merge market cap with our main df 
 df_merged = pd.merge(df, market_cap, how ='left', on='symbol')
 # Sort by largest to smallest
-df_merged = df_merged.sort_values(by='market_cap_percentage', ascending=False, na_position='last') 
+df_merged = df_merged.sort_values(by='portfolio weights', ascending=False, na_position='last') 
 df_merged['market_cap_percentage'] = df_merged['market_cap_percentage'].fillna(0)
 
 # Merge binance prices with our main df
@@ -141,7 +141,7 @@ df_merged['symbol'] = df_merged['symbol'] + 'BTC'
 
 # calculate total pf values
 index = df_merged.query('symbol == "BTCUSDT"').index
-price_btc = df_merged['price_BTC'][index][0]
+price_btc = df_merged['price_BTC'][index][1]
 pf_value_usdt = df_merged["USDT"].sum()
 # Calculate the total portfolio value in btc
 pf_value_btc = pf_value_usdt/price_btc

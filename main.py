@@ -5,7 +5,7 @@ import pandas as pd
 import config
 from binance.enums import SIDE_BUY, SIDE_SELL, ORDER_TYPE_MARKET
 
-# Turn off warnings test. The warning arrises with pandas. 
+# Turn off warnings test. The warning arises with pandas. 
 # The code has been checked and the warning is a false positive.
 # default='warn'
 pd.options.mode.chained_assignment = None  

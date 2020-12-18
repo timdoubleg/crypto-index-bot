@@ -117,6 +117,17 @@ df_merged = pd.merge(df, market_cap, how ='left', on='symbol')
 df_merged = df_merged.sort_values(by='market_cap_percentage', ascending=False, na_position='last') 
 df_merged['market_cap_percentage'] = df_merged['market_cap_percentage'].fillna(0)
 
+# Merge binance prices with our main df
+df_merged = pd.merge(df_merged, prices_binance, on='symbol', how='left')
+
+# calculate prices_USDT and prices_BTC
+df_merged = df_merged.rename(columns={'price_x': 'price_USDT', 'price_y': 'price_BTC'}) #change name of column
+index = df_merged.query('symbol == "BTCUSDT"').index
+price_btc = df_merged['price_BTC'][index][1]
+price_btc = float(price_btc)
+df_merged['price_BTC'] = pd.to_numeric(df_merged['price_BTC'])
+df_merged['price_BTC'] = df_merged['price_BTC']/price_btc
+
 # Calculate the differences
 df_merged['difference'] = df_merged['market_cap_percentage'] - df_merged['portfolio weights']
 
@@ -135,11 +146,11 @@ df_merged['symbol'] = df_merged['symbol'] + 'BTC'
 """
 
 # calculate total pf values
-index = df_merged.query('symbol == "BTCUSDT"').index
-price_btc = df_merged['price'][index][0]
 pf_value_usdt = df_merged["USDT"].sum()
 # Calculate the total portfolio value in btc
 pf_value_btc = pf_value_usdt/price_btc
+
+
 
 print('\n')
 print('Your USDT portfolio value is: ', pf_value_usdt)
